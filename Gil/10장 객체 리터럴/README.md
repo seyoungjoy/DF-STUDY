@@ -3,7 +3,7 @@
 
 ## **<span style="color:93cfcc">10.1  객체란?</span>**
 **원시타입과 달리 변경 가능한 값이며, 상태(프로퍼티)와 동작(메서드)을 하나로 구성된 집합체이다.**
-```c
+```js
 var Gil = {
     name: 'KimYoungGil',  //프로퍼티
     say: function(){
@@ -19,7 +19,7 @@ var Gil = {
 <br/><br/> 
 
 *빈객체를 생성하는 방법
-```c
+```js
 var GilBrain = {} //아무런생각이없다....
 ```
 <br/>
@@ -34,7 +34,7 @@ var GilBrain = {} //아무런생각이없다....
 
 ### **🤜🏻 10.3.1 동적으로 프로퍼티생성하기**
 동적으로 프로퍼티를 생성할때는 키로 사용될 부분에는 **대괄호([...])** 를 사용해야한다.
-```c
+```js
 var Gil = {};
 var key = '오늘저녁';
 Gil[key] = '버거킹 와퍼'; //대괄호사용할것!
@@ -64,7 +64,7 @@ console.log(Gil); //{오늘저녁 : 버거킹 와퍼}
 <br>
 
 **식별자네이밍에 따른 프로퍼티키의 경우** 마침표를 이용하여 접근할수있으며 대괄호도 사용할 수 있다.
-```c
+```js
 var Gil = {
     burger : '2개 7천원'
 }
@@ -78,7 +78,7 @@ console.log(Gil['burder']); //2개 7천원
 
 **식별자네이밍에 따르지 않은 프로퍼티키의 경우** 대괄호만 사용할 수 있다.
 
-```c
+```js
 var Gil = {
     'cheeze-burger' : '2개 7천원'
 }
@@ -94,7 +94,7 @@ console.log(Gil.['cheeze-burger']); //2개 7천원
 
 만들어진 객체를 갱신할 수 있다.
 
-```c
+```js
  var Gil = {
      menu: '순찌'
  }
@@ -107,7 +107,7 @@ console.log(Gil.['cheeze-burger']); //2개 7천원
 
 존재하는 객체에서 프로퍼티키, 프로퍼티값을 할당하면 프로퍼티를 추가할 수 있다.
 
-```c
+```js
 var Gil ={
     name: 'KimYoungGil'
 }
@@ -119,7 +119,7 @@ console.log(Gil); // {name: 'KimYoungGil', hair:'짧다'}
 
 객체안에 프로퍼티를 삭제할땐 delete 연산자를 이용하면 되는데 존재하지 않은 프로퍼티를 삭제를 하더라도 에러는 뜨지 않는다.
 
-```c
+```js
 var Gil ={
     name: 'KimYoungGil',
     character: '나쁜사람'
@@ -139,7 +139,7 @@ delete Gil.character;
 
 ### **🤜🏻 10.9.3 메서드 축약 표현**
 * 메서드의 함수를 축약 해서 정의할 수 있다.
-```c
+```js
 //ES5
 var Gil ={
     where: function(){
@@ -155,21 +155,3 @@ var Gil ={
 }
 ```
 💦 *축약으로 정의된 메서드는 축약하지 않은 메서드와 다르게 동작한다.*
-
-# QUIZ
-
-다음코드의 에러문구를 보고 틀린 부분을 올바르게 수정하시오. (100점)
-
-```c
-var Idols ={
-    2pm: '10점 만점에 10점',
-    2am: '죽어도 못보내',
-    G_IDLE: '라타타~ 라타타~',
-    OHMYGIRL:'물보라를 일으켜'
-}
-delete Idols['스트레이키즈'];
-Idols[EXID] = 'whos that girl';
-console.log(Idols);
-
-//Uncaught SyntaxError: Invalid or unexpected token
-```
