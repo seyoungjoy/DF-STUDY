@@ -12,8 +12,6 @@ var day = 21;
 3. 할당 : 값을 할당하고 모든 선언의 키워드는 런타임에서 이뤄진다.<br><br>
    
 선언 실행시점과 호이스팅, 값의 할당
-<hr/>
-
 ```javascript
 console.log(day); //2. output: undefinded
 var day;  //1.호이스팅되어 위로 올라가고
