@@ -1,4 +1,4 @@
- # **✍ <span style="color:ef725e">10장 객체 리터럴</span>**
+ # **✍ <span style="color:#ef725e">10장 객체 리터럴</span>**
 
 
 ## **<span style="color:93cfcc">10.1  객체란?</span>**
