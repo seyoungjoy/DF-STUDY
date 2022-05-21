@@ -1,1 +1,0 @@
- <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter7.%20%EC%97%B0%EC%82%B0%EC%9E%90&fontSize=60" style="width:100%;"/>
