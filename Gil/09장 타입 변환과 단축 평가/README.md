@@ -1,1 +1,109 @@
- <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter8.%20%ED%83%80%EC%9E%85%EB%B3%80%ED%99%98%EA%B3%BC%20%EB%8B%A8%EC%B6%95%ED%8F%89%EA%B0%80&fontSize=50" style="width:100%;"/>
+ <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter9.%20%ED%83%80%EC%9E%85%EB%B3%80%ED%99%98%EA%B3%BC%20%EB%8B%A8%EC%B6%95%ED%8F%89%EA%B0%80&fontSize=50" style="width:100%;"/>
+
+ # **9.1 타입 변환이란?**
+ 값의 타입을 바꾸는 것으로 개발자의 의도로 타입을 바꾸는 것을 **명시적타입변환(타입캐스팅)**, 자바스크립트 엔진에 의한 타입을 바뀌는 것을 **암묵적타입변환(타입강제변환)** 이라고 한다.
+
+ # **9.2 암묵적 타입변환**
+ ## **9.2.1 문자열 타입으로 변환**
+**+연산자**는 문자열이 하나이상일때 연결연산자로 동작하여 타입을 강제로 문자열로 변환한다. 또한 **템플릿 리터럴 중 표현식 삽입(``백틱)**도 표현식의 결과값을 암묵적으로 문자열타입으로 변환한다.
+
+```js
+0 + '' // '0'
+NaN + '' // 'NaN'
+true + '' // 'true'
+null + '' // 'null'
+undefined + '' // 'undefined'
+(Symbol()) + '' // TypeError
+(function(){}) + '' // 'function(){}'
+`1 + 1 = ${1+3}` // '1+1=4'
+```
+<br>
+
+## **9.2.2 숫자 타입으로 변환**
+산술연산자, 비교연산자는 피연산자를 숫자타입으로 암묵적 타입변환을 한다. 타입변환을 하여 연산이 불가능할때 NaN이 결과값으로 나온다.
+
+```js
+1 - '1' // 0
+'1' > 0 // true
+1 / 'gil' // NaN
++'0' // 0
+```
+>+연산자는 피연산자가 1개일때 숫자타입으로 암묵적타입변환을 한다.
+
+<br>
+
+## **9.2.3 불리언 타입으로 변환**
+참과 거짓으로 평가되는 표현식은 자바스크립트엔진에서 불리언값으로 암묵적인 타입변환을 한다. 이때 불리언타입이 아닌 값을 **Truthy(true로 평가되는 값), Falsy(false로 평가되는 값)** 으로 구분한다.
+
+>**false, undefined, null, 0, -0, NaN, ''(빈문자열)** 외에는 ture로 평가 된다.
+
+<br>
+
+ # **9.3 명시적 타입 변환**
+ ## **9.3.1 문자열 타입으로 변환**
+ ```js
+ //표준빌트인 생성자함수
+ String(Gil);
+
+ //표준빌트인 메서드
+ (Gil).toString();
+ 
+ //암묵적타입변환 (+연산자를 연결연산자로 이용)
+ Gil + '';
+ ```
+<br>
+
+ ## **9.3.2 숫자 타입으로 변환**
+ ```js
+ //표준빌트인 생성자함수
+ Number('123');
+
+ //parseInt, ParseFloat 함수
+ ParseInt('123');
+ ParseFloat('123');
+ 
+ //+ 단항 산술연산자
+ +'123';
+
+ //* 산술연산자
+ '123'*1;
+ ```
+<br>
+
+## **9.3.3 불리언 타입으로 변환**
+```js
+//표준빌트인 생성자함수
+Boolean('Gil');
+
+//! 부정 논리연산자
+!!'Gil';
+```
+<br>
+
+# **9.4 단축 평가**
+표현식을 평가할때 결과가 확정된 경우 나머지 평가과정을 생략하는 것이며 이때 값의 타입을 변환하지 않고 반환한다.
+
+<br>
+
+## **9.4.1 논리연산자를 사용한 단축평가**
+```js
+//논리합 연산자
+'Gil' || 'Young'; // 'Gil'
+false || 'Young'; // 'Young'
+'Gil' || false;  // 'Gil'
+
+//논리곱 연산자
+'Gil' && 'Young'; // 'Young'
+false && 'Young'; // fasle
+'Gil' && false;  // false
+```
+
+## **9.4.2 옵셔널 체이닝 연산자**
+ES11에서의 연산자이며 왼쪽의 피연산자가 null, undefined이라면 undefined를 반환하고 그렇지 않으면 오른쪽의 프로퍼티를 참조한다.
+>논리곱 연산자의 상위호환
+
+<br>
+
+## **9.4.3 null 병합 연산자**
+ES11에서의 연산자이며 왼쪽의 피연산자가 null, undefined을 제외 한 falsy값이라도 왼쪽 값을 반환한다.
+>논리합 연산자의 상위호환
