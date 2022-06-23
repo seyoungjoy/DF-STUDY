@@ -1,4 +1,4 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter10.%20%EC%9B%90%EC%8B%9C%EA%B0%92%EA%B3%BC%20%EA%B0%9D%EC%B2%B4%EC%9D%98%20%EB%B9%84%EA%B5%90&fontSize=45" style="width:100%;"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter11.%20%EC%9B%90%EC%8B%9C%EA%B0%92%EA%B3%BC%20%EA%B0%9D%EC%B2%B4%EC%9D%98%20%EB%B9%84%EA%B5%90&fontSize=45" style="width:100%;"/>
 
 * 원시값은 변경이 불가능한 값, 객체값은 변경 가능한 값이다.
 * 원시값을 변수에 할당하면 실제값이 저장, 객체값을 변수에 할당하면 참조값이 저장된다.
