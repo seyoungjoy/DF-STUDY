@@ -2,10 +2,10 @@
 
 # **17.1 Object 생성자 함수**
 
-new 연산자와 함께 Object 생성자 함수를 호출하면 빈 객체르 생성할 수 있다. 이때 new 연산를 써서 만든 객체를 **인스턴스**라고 한다.
+new 연산자와 함께 Object 생성자 함수를 호출하면 빈 객체를 생성할 수 있다. 이때 new 연산를 써서 만든 객체를 **인스턴스**라고 한다.
 
 ```js
-const gil = new Objec();
+const gil = new Object();
 
 gil.name = 'gil';
 
