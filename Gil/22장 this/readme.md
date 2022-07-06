@@ -1,104 +1,199 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter18.%20%ED%95%A8%EC%88%98%EC%99%80%20%EC%9D%BC%EA%B8%89%20%EA%B0%9D%EC%B2%B4&fontSize=45">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter22.%20this&fontSize=50">
 
-# **18.1 일급 객체**
-
-일급객체의 조건
-
-* 무명의 리터럴로 생성할 수 있다.(런타임에 생성가능)
-* 변수나 자료구조(객체, 배열)에 저장 가능하다.
-* 함수의 매개변수에 전달 가능하다.
-* 함수의 반환값으로 사용 가능하다.
-
-> 함수는 4가지에 모두 해당한다.
+# **22.1 this 키워드**
+객체는 자신의 프로퍼티를 참조하고 변경할 수 있어야한다. 재귀적으로 호출하여 내부 메서드가 참조할 수 있지만 이는 올바르지 않은 방법이다.
 
 <br>
 
-# **18.2 함수 객체의 프로퍼티**
+**this는 자신이 속한 객체 또는 자신이 생성할 인스턴스를 가리키는 자기 참조 변수이다.** this를 이용해서 자신이 속한 객체, 자신이 생성할 인스턴스의 프로퍼티나 메서드를 참조할 수 있다.
 
-<br>
-
-## **18.2.1 arguments 프로퍼티**
-
-arguments 프로퍼티는 함수 호출 시 전달된 인수의 저오를 담고 있는 순회 가능한 유사 배열객체의 정보를 가지고 있다.
+> **객체리터럴**에서는 메서드를 호출한 객체를 가리킨다.
 
 ```js
-function gil(x,y){
-    console.log(arguments);
-    return x + y;
-}
-console.log(gil('gi','hi')); // 0: 'gi', 1: 'hi'
-```
-
-* **collee:** 함수 호출됐을때 호출된 함수 자신의 정보를 가지고 있다.
-* **length:** 인수의 개수를 나타냄
-
-<br>
-
-* **arguments 객체의 Symbol(Symbol.itertator) 프로퍼티**
-
->arguments 객체를 순화 가능한 itertator(이터러블)로 만들기위한 프로퍼티이다.
-
-<br>
-
-arguments 객체는 매개변수 개수를 정해 놓지 않고 가변인자함수를 만들때 유용하다.
-
-```js
-function gil(){
-    let res = 0;
-
-    for(let i=0; i < arguments.length; i++){
-        res += arguments[i];
+const gil = {
+    x: 1,
+    getX(){
+        return this.x;// this === gil{x:1, f}
     }
-
-    return res;
-}
-
-console.log(gil(1,2,3));// 6
-
+};
+console.log(gil.getX());
 ```
-
-📌 arguments는 유사배열객체인데 length프로퍼티를 가진객체로 for문으로 순회할 수 있는 객체를 말한다.
-
 <br>
 
-## ~~**18.2.2 caller 프로퍼티**~~
-
-<br>
-
-## **18.2.3 length 프로퍼티**
-함수를 정의할때 매개변수의 개수 정보를 가지고 있다.
+> **생성자함수**에서는 생성될 인스턴스를 가리킨다.
 
 ```js
-function gil(x,y,z){
-    console.log(arguments.length); // 인자개수 0
+function gil(x){
+    this.x = x; //this === gil{x: 1}
+}
+gil.prototype.getX = function(){
+    return this.x;
 }
 
-console.log(gil.length); // 매개변수 개수 3
+const who = new gil(1);
 
-gil();
+console.log(who.getX());
 ```
+
+📌자바스크립트 this는 함수가 호출되는 방식에 따라 this에 바인딩될 값이 결정된다.(this 바인딩이 동적으로 결정)
 
 <br>
 
-## **18.2.4 name 프로퍼티**
-name 프로퍼티는 기명 함수 객체에서는 함수 이름을 가리키고, 익명 함수에서는 함수객체를 가리키는 변수 이름을 가리킨다.
+# **22.2 함수 호출 방식과 this 바인딩**
+
+<br>
+
+## **22.2.1 일반 함수 호출**
+일반함수에서 호출 하면 this는 전역 객체(window)가 바인딩 된다.<br>
+
+**모든 일반함수(중첩함수, 콜백함수 포함)가 호출되면 this에는 ```전역객체 window```가 바인딩 된다는 것을 기억하자!**
+
+<br>
+
+>중첩함수, 콜백함수에서 this를 일치 하는 방법
 
 ```js
-const gil1 = function hi(){}
-const young = function (){}
+var x = 3;
 
-console.log(gil1.name); // hi
-console.log(young.name); // young
+const gil ={
+    x: 1,
+    AA(){
+        // this를 변수에 할당하여
+        // 내부함수에서 가리키는 this를 일치시킴
+        const target = this;
+
+        function innerAA(){
+            console.log(target.x);
+        }
+        innerAA();
+    }
+}
+gil.AA(); // 1
 ```
 
 <br>
 
-## **18.2.5 _ _ proto _ _ 접근자 프로퍼티**
-객체의 [[Prototype]] 내부슬롯을 간접적으로 접근 할수있는 프로퍼티이다.
+> Function.prototype.bind 메서드를 이용하여 일치시키는 방법
+
+```js
+var x = 3;
+
+const gil ={
+    x: 1,
+    AA(){
+        setTimeout(function(){
+            console.log(this.x);
+        }.bind(this), 100);
+    }
+}
+gil.AA(); // 1
+```
 
 <br>
 
-## **18.2.6 prototype 프로퍼티**
-생성자 함수로 호출할 수 있는 함수객체(constructor)만 소유한 프로퍼티 이다. 즉, 일반객체와 생성자 함수로 호출 불가능한 non-constructor는 가지고 있지 않다.
+> 화살표 함수를 이용하여 일치시키는 방법
 
-📌 생성자함수로 호출될때 인스턴스 프로토타입 객체를 가리킨다.
+```js
+var x = 3;
+
+const gil ={
+    x: 1,
+    AA(){
+        setTimeout(()=> console.log(this.x) , 100);
+    }
+}
+gil.AA(); // 1
+```
+
+<br>
+
+## **22.2.2 메서드 호출**
+메서드는 가리키는 함수객체에 따라 변수에 할당하여 일반함수로 호출할 수도 있고, 다른 객체의 메서드가 될 수도 있다.
+
+<br>
+
+```js
+const gil = {
+    name: 'Kim',
+    AA(){
+        console.log(this.name);
+    }
+};
+
+const young = {name: 'none'};
+
+//다른 객체 메서드로 할당
+young.BB = gil.AA;
+young.BB();
+
+
+//변수에 할당, 이때 this는 일반함수 호출이므로 window를 가리킨다.
+const getName = gil.AA;
+getName(); // ''
+
+/*=================== 프로토타입 메서드 사용 시====================*/
+
+function gil(name){
+    this.name = name;
+}
+
+gil.prototype.AA = function(){
+    console.log(this.name);
+}
+
+const getName = new gil('Kim');
+getName.AA(); //Kim
+
+gil.prototype.name = 'none';
+gil.prototype.AA(); //none
+```
+
+<br>
+
+## ~~**22.2.3 생성자 함수 호출**~~
+
+<br>
+
+## **22.2.4 Function.prototype.apply/call/bind 메서드에 의한 간접 호출**
+
+<br>
+
+```apply, call```
+
+apply와 call은 본질적 기능은 함수 호출이며 이때 첫번쨰 인수로 전달한 객체를 this에 바인딩한다. 그리고 배열을 묶어 보낼수 있지만 전달 방식만 다르다.
+
+```js
+function gil(name){
+    console.log(arguments);
+    return this;
+}
+const getName = {name: 'Kim'};
+
+//호출할 함수의 인수를 apply는 배열로 묶어 전달
+console.log(gil.apply(getName, [1,2,3]));
+
+//호출할 함수의 인수를 call은 쉼표로 구분하여 전달
+console.log(gil.call(getName, 1, 2, 3));
+```
+
+📌 apply, call의 대표적 용도는 arguments 유사배열객체를 배열메서드로 사용하는 것이다.
+
+<br>
+
+```bind``` <br>
+bind 메서드는 함수 호출을 하지 않아 명시적으로 호출 해줘야한다. 그리고 첫번째 인수값으로 this 바인딩이 교체된 함수를 새롭게 생성해 반환한다.
+
+```js
+const gil = {
+    name: 'Kim',
+    AA(callback){
+        //bind 메서드로 함수내부 this 바인딩 전달
+        setTimeout(callback.bind(this), 100);
+    }
+};
+
+gil.AA(function(){
+    console.log(`nice meet you ${this.name}`);
+    //nice meet you Kim
+});
+```
