@@ -125,3 +125,34 @@ console.log(getThisBinding());//window
 console.log(getThisBinding.apply(thisArg)); //{a:1}
 console.log(getThisBinding.call(thisArg)); //{a:1}
 ```
+- bind 메서드는 apply, call 메서드와 달리 함수를 호출하지 않고
+- 첫번째 인수로 전달된 값으로 this 바인딩을 한 후 함수를 새롭게 생성해서 반환한다.
+
+```jsx
+function getThisBinding(){
+		return this;
+}
+
+// this로 사용할 객체
+const thisArg = {a:1};
+
+//getThisBinding 함수를 새롭게 생성해 반환한다.
+console.log(getThisBinding.bind(thisArg)); //getThisBinding
+// bind 메서드는 함수를 호출하지 않기때문에 명시적으로 호출해줘야한다.
+console.log(getThisBinding.bind(thisArg)()); //{a:1}
+
+
+```
+
+```jsx
+const person = {
+		name:'Lee',
+    foo(callback){
+				setTimeout(callback.bind(this), 100);
+    }
+}
+
+person.foo(function(){
+		console.log(this.name);
+})
+```
