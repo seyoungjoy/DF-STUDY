@@ -271,3 +271,5 @@ dec = decodeURI(enc);
 console.log(dec);
 // name=이웅모&job=programmer&teacher
 ```
+네트워크에서 읽힐수 있도록 문자화시켜주는데 인코딩이고
+그리고 그렇게 인코딩한 단어를 다시 원래대로 복구시켜주는데 디코
