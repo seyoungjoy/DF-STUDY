@@ -71,26 +71,61 @@ innerFunc(); //10
 하고 특정 함수에게만 상태 변경을 허용하여 상태를 안전하게 변경하고 유지하기 위해 사용한다.
 
 ```js
+// 자유함수 counter 상태를 기억하는 클로저
 const Counter = (function(){
-    let num = 0;
+    //자유변수
+    let counter = 0;
 
-    function Counter(){}
+    //함수(여기선 inc 혹은 dec)를 인수로 전달받는 클로저를 반환
+    return function(aux){
+        //인수로 받은 함수 전달 및 상태변경
+        counter = aux(counter);
 
-    Counter.prototype.increase = function(){
-        return ++num;
-    };
-
-    Counter.prototype.decrease = fucntion(){
-        retrun num > 0 ? --num : 0;
-    };
-
-    return Counter;
+        //결과값 반환
+        return counter;
+    }
 }());
 
-const counter = new Counter();
+function inc(n){
+    return ++n;
+}
 
-console.log(counter.increase()); //1
-console.log(counter.increase()); //2
-console.log(counter.decrease()); //1
-console.log(counter.decrease()); //0
+function dec(n){
+    return --n;
+}
+
+console.log(Counter(inc)); //1
+console.log(Counter(inc)); //2
+console.log(Counter(dec)); //1
+console.log(Counter(dec)); //0
 ```
+
+<br>
+
+# **24.5 캡슐화와 정보 은닉**
+객체 상태를 나타내는 프로퍼티와 프로퍼티를 참조, 동작하는 메서드를 묶을 것을 ```캡슐화```라고 한다.
+
+<br>
+
+```js
+//즉시실행함수
+const Gil = (function (){
+
+    function Person(name, age){
+        this.name = name; //프로퍼티
+        this.age = age; //프로퍼티
+    }
+    
+    Person.prototype.sayHi = function(){
+        console.log(`hi! ${this.name}. im ${this.age}`);
+    }
+
+    return Person;
+}());
+
+const call1 = new Gil('gil','31');
+console.log(call1);
+```
+
+즉시실행 함수와 프로퍼티를 이용하면 외부에서 참조 할 수 없는 ```private``` 상태로 어느정도 정보를 은닉 할 수 있다.
+
