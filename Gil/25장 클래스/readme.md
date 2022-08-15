@@ -139,3 +139,30 @@ console.log(me);//Gil {name:'gil'}
 ```
 
 > 따라서 constructor 안에서는 return문을 생략 하길 바란다! 
+
+<br>
+
+## **25.5.2 프로토타입 메서드**
+클래스 몸체에서 정의한 메서드는 클래스의 prototype 프로퍼티에 메서드를 추가하지 않아도 기본적으로 프로토타입 메서드가 된다.
+
+```js
+class Gil{
+    //생성자
+    constructor(name){
+        //인스턴스 생성 및 초기화
+        this.name = name;
+    }
+
+    //프로토타입 메서드
+    sayHi(){
+        console.log(`Hi! My name is ${this.name}`);
+    }
+}
+
+const me = new Gil('gil');
+me.sayHi(); //Hi! My name is gil
+```
+
+<br>
+
+## **25.5.3 정적 메서드**
