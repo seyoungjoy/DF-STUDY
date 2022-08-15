@@ -1,4 +1,4 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter25.%20%ED%81%B4%EB%9E%98%EC%8A%A4&fontSize=50">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=1&height=200&section=header&text=Chapter25.%20%ED%81%B4%EB%9E%98%EC%8A%A4&fontSize=50" alt="">
 
 # **25.1 클래스는 프로토타입의 문법적 설탕인가?**
 > **클래스는 새로운 객체 생성 메커니즘이다.**
@@ -166,3 +166,16 @@ me.sayHi(); //Hi! My name is gil
 <br>
 
 ## **25.5.3 정적 메서드**
+클래스에서 메서드에 static 키워드를 사용하면 정적 메서드(클래스 메서드)가 된다.
+```js
+class Gil{
+    constructor(name){
+        //인스턴스 생성 및 초기화
+        this.name = name;
+    }
+    //정적 메서트
+    static sayHi(){
+        console.log('hi');
+    }
+}
+```
