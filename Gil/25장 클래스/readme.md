@@ -177,5 +177,5 @@ class Gil{
     static sayHi(){
         console.log('hi');
     }
-}
+} 
 ```
