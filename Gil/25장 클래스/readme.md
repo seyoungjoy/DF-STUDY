@@ -179,3 +179,161 @@ class Gil{
     }
 } 
 ```
+
+<br>
+
+## **25.5.4 정적 메서드와 프로토타입 메서드의 차이**
+
+<br>
+
+1. 정적메서드와 프로토타입메서드는 자신이 속해있는 프로토타입 체인이 다름.
+2. 정적메서드는 클래스로 호출, 프로토타입메서더는 인스턴스로 호출
+3. 정적메서드는 인스턴스 프로퍼티 참조 X, 프로토타입메서드는 인스턴스 프로퍼티 참조 O
+
+
+```js
+class Square{
+    constructor(width,height){
+        this.width = width;
+        this.height = height;
+    }
+    
+    //정적메서드
+    static area2(width,height){
+        return width*height;
+    }
+    
+    //프로토타입 메서드    
+    area(){
+        return this.width * this.height;
+    }
+}
+
+console.log(Square.area2(10,10));
+
+const gil = new Square(2,5);
+console.log(gil.area());
+```
+
+> 인스턴스 프로퍼티를 참조 하고 싶을땐 this를 사용하고 프로토타입 메서드를 이용한다, 인스턴스 프로퍼티를 참조할 필요가 없다면 정적 메서드를 사용한다.
+
+📌 정적메서드를 사용하면 전역에서 사용할 유틸리티 함수를 전역 함수로 정의하지 않고 메서드로 구조화할 때 유용하다.
+
+<br>
+
+## **25.5.5 클래스에서 정의한 메서드의 특징**
+
+* function 키워드를 생략한 축약표현을 사용한다.
+* 메서드를 정의할 때는 콤마가 필요 없다.
+* 암묵적으로 strict mode로 실행
+* 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 false이다.(열거불가능)
+* new 연산자와 함께 호출할 수 없다.
+
+<br>
+
+# **25.6 클래스의 인스턴스 생성 과정**
+
+<br>
+
+```js
+class Gil{
+    //생성자
+    constructor(name){
+        //1. 암묵적으로 인스턴스가 생성, this 바인딩
+        console.log(this); // Gil{}
+        console.log(Object.getPrototypeOf(this) === Gil.prototype); // true
+        
+        //2. this에 바인딩되어 있는 인스턴스를 초기화
+        this.name = name;
+        
+        //3. 완성된 인스턴스가 바인딩된 this가 암묵적 반환
+    }
+}
+```
+
+<br>
+
+## ```1. 인스턴스 생성과 this 바인딩```
+* (constructor 실행전) 암묵적으로 빈객체 생성
+* 클래스가 생성한 인스턴스의 프로토타입으로 클래스의 prototype 프로퍼티가 가리키는 객체 설정
+* 빈객체에 인스턴스 this 바인딩 <br>
+> 📌 constructor 내부의 this는 클래스가 생선한 인스턴스를 카리킨다
+ 
+<br>
+
+## ```2. 인스턴스 초기화```
+* this에 바인딩된 인스턴스에 프로퍼티를 추가
+* constructor가 인수로 전달받은 초기값으로 인스턴스의 프로퍼티값을 초기화
+
+<br>
+
+## ```3. 인스턴스 반환```
+클래스의 모든 처리가 끝나면 완성된 인스턴스가 바인딩된 this가 암묵적으로 반환된다.
+
+<br>
+
+# **25.7 프로퍼티**
+
+<br>
+
+# **25.7.1 인스턴스 프로퍼티**
+인스턴스 프로퍼티는 constructor 내부에서 정의함으로써 클래스가 암묵적으로 생성한 빈객체(인스턴스)에 프로퍼티가 추가되어 초기화 된다.
+
+<br>
+
+```js
+class Gil{
+    constructor(name){
+        //인스턴스 프로퍼티
+        this.name = name; //name 프로퍼티는 public
+    }
+}
+//name은 public
+const me = new Gil('gil');
+console.log(me.name);//gil
+```
+
+<br>
+
+# **25.7.2 접근자 프로퍼티**
+접근자 프로퍼티는 자체적인 값을 갖지 않고 다른 데이터 프로퍼티의 값을 읽거나 저장 할때 사용하는 접근자 함수(getter,setter)로 구성된 프로퍼티다.
+
+```js
+class Gil{
+    constructor(firstName, lastName){
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+    
+    //fullName은 접근자 프로퍼티이다.(get,set)
+    //getter함수
+    get fullName(){
+        return `${this.firstName} ${this.lastName}`;
+    }
+    
+    //setter함수
+    set fullName(name){
+        [this.firstName, this.lastName] = name.split('');
+    }
+}
+
+const me = new Gil('gil','kim');
+
+//데이터 프로퍼티를 통한 프로퍼티 값 참조
+console.log(`${me.firstName} ${me.lastName}`);
+
+//값저장 setter함수 호출
+me.fullName = "jaehoon choi";
+console.log(me); //{fistName:jaehoon, lastName:choi}
+
+//값참조 getter함수 호출
+console.log(me.fullName);
+
+
+
+```
+
+getter,setter 이름은 인스턴스 프로퍼티처럼 사용된다. getter는 프로퍼티처럼 참조하는 형식으로 사용하며, setter는 프로퍼티처럼 값을 할당하는 형식으로 사용된다.
+
+>클래스의 메서드는 기본적으로 프로토타입 메서드가 되며 접근자 또한 인스턴스 프로퍼티가 아닌 프로토타입의 프로퍼티가 된다. 
+
