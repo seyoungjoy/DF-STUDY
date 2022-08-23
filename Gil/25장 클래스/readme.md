@@ -276,7 +276,7 @@ class Gil{
 
 <br>
 
-# **25.7.1 인스턴스 프로퍼티**
+## **25.7.1 인스턴스 프로퍼티**
 인스턴스 프로퍼티는 constructor 내부에서 정의함으로써 클래스가 암묵적으로 생성한 빈객체(인스턴스)에 프로퍼티가 추가되어 초기화 된다.
 
 <br>
@@ -295,7 +295,7 @@ console.log(me.name);//gil
 
 <br>
 
-# **25.7.2 접근자 프로퍼티**
+## **25.7.2 접근자 프로퍼티**
 접근자 프로퍼티는 자체적인 값을 갖지 않고 다른 데이터 프로퍼티의 값을 읽거나 저장 할때 사용하는 접근자 함수(getter,setter)로 구성된 프로퍼티다.
 
 ```js
@@ -339,7 +339,7 @@ getter,setter 이름은 인스턴스 프로퍼티처럼 사용된다. getter는 
 
 <br>
 
-# **25.7.3 클래스 필드 정의 제안**
+## **25.7.3 클래스 필드 정의 제안**
 클래스필드는 클래스 기반 객체지향 언어에서 클래스가 생성할 인스턴스의 프로퍼티를 가리키는 용어다.
 <br><br>
 **자바스크립트의 클래스 몸체에는 메서드만 선언할 수 있다.** 자바와 유사하게 클래스 필드를 선언하면(this 없이) 문법 에러가 발생한다.<br>
@@ -394,3 +394,78 @@ constructor에서 인스턴스 프로퍼티를 정의 하는 방식 사용(기�
 
 ```외부 초기값으로 클래스 필드를 초기화할 필요가 없는 경우```<br>
 기존 방식과 클래스 필드 정의 제안(클래스 몸체에서 변수처럼 정의 하는것) 모두 사용 가능
+
+<br>
+
+## **25.7.4 private 필드 정의 제안**
+최신 브라우저와 TC39 프로세스의 stage3에는 private 필드를 정의할 수 있는 새로운 표준 사양이 제안 되어 있다.
+( '#'을 private 필드 선두에 붙여 사용한다.)
+
+<br>
+
+클래스 몸체가 아닌 contructor 안에서 정의 하면 SyntaxError가 발생한다.
+
+```js
+class Person{
+    #name = '';
+    constructor(name){
+        //private 참조
+        this.#name = name;
+    }
+}
+const me = new Person('gil');
+
+//#name은 클래스 외부에서 참조 불가
+//SyntaxError
+console.log(me.#name);
+```
+
+<br>
+
+**접근자 프로퍼티(getter 함수)** 를 사용하면 간접 접근을 할 수 있다.
+
+```js
+class Person{
+    #name = '';
+    constructor(name){
+        //private 참조
+        this.#name = name;
+    }
+    
+    //getter 함수
+    get name(){
+        return this.#name;
+    }
+}
+const me = new Person('gil');
+console.log(me.#name); //gil
+```
+
+<br>
+
+## **25.7.5 static 필드 정의 제안 **
+최신 브라우저와 TC39 프로세스의 stage3에는 static private 필드, 메서드를 정의할 수 있는 새로운 표준 사양이 제안 되어있다.
+
+```js
+class MyMath{
+    //static public 필드 정의
+    static PI = 22/7;
+    static #num = 10;
+    
+    //static 메서드
+    static increment(){
+        return ++MyMath.#num
+    }
+}
+
+console.log(MyMath.PI); // 3.14...
+console.log(MyMath.increment()); //11
+```
+
+<br>
+
+# **25.8 상속에 의한 클래스 확장**
+## **25.8.1 클래스 상속과 생성자 함수 상속**
+프로토타입 기반 상속은 프로토타입 체인을 통해 다른 객체의 자신을 상속 받는 개념이지만 **상속에 의한 클래스 확장은 기존 클래스를 상속받아 새로운 클래스를 확장(extends) 하여 정의** 하는것이다.
+
+
