@@ -79,12 +79,125 @@ const add = function(a,b){return a+b};
 - 프로토타입과 생성자 함수는 단독으로 존재할 수 없고 언제나 쌍으로 존재한다!
 
 ## 19.5 프로토타입의 생성 시점
+- 프로토타입은 생성자 함수가 생성되는 시점에 더불어 생성된다.
+
 ## 19.6 객체 생성 방식과 프로토타입의 결정
+### 19.6.1 객체 리터럴에 의해 생성된 객체의 프로토타입
+```jsx
+const obj = {x:1};
+```
+- 객체 리터럴에 의해 생성되는 객체의 프로토타입은 `Object.prototype`
+- 
+![img_5.png](img_5.png)
+
+### 19.6.2 Object 생성자 함수에 의해 생성된 객체의 프로토타입
+```jsx
+const obj = new Object();
+```
+- `Object.prototype`
+
+### 19.6.3 생성자 함수에 의해 생성된 객체의 프로토타입
+```jsx
+function Person(name){
+    this.name = name;
+}
+
+const me = new Person('seyoung');
+```
+- `Person.prototype`
+
 ## 19.7 프로토타입 체인
+- 자바스크립트는 객체의 프로퍼티/메서드에 접근하려고 할 때 해당 프로퍼티가 없으면 `[[Prototype]]` 내부 슬롯의 참조를 따라 자신의 부모 역할을 하는 프로토타입의 프로퍼티를 순차적으로 검색한다.
+- 이를 프로토타입 체인이라고 한다.
+- 프로토타입 체인의 최상위에 위치하는 객체는 언제나 `Object.prototype`
+- 즉 프로토타입 체인은 상속과 프로퍼티 검색을 위한 메커니즘
+- 스코프 체인은 식별자 검색을 위한 메커니즘.
+- 스코프 체인을 통해 해당 식별자를 찾은 후, 해당 식별자의 프로퍼티/메서들르 찾기 위해 프로토타입을 체인을 검색한다.
+ 
 ## 19.8 오버라이딩과 프로퍼티 섀도잉
-## 19.9 프로토타입의 교체
+- 오버라이딩 : 상위 클래스가 가지고 있는 메서드를 하위 클래스가 재정의하여 사용하는 것
+- 프로퍼티 섀도잉 : 이러한 상속 관계에 의해 가려지는 현상을 프로퍼티 섀도잉이라고 함.
+```jsx
+const Person = (function(){
+    function Person(name){
+        this.name = name;
+    }
+    
+    Person.prototype.sayHello = function(){
+        console.log('hello')
+    }
+    return Person;
+}());
+
+const me = new Person('yang');
+
+me.sayHello = function(){
+    console.log('hi');
+}
+
+me.sayHello(); //hi
+```
+
+
 ## 19.10 instanceof 연산자
-## 19.11 직접 상속
+- 프로토타입 체인상에 존재 유무를 알려줌.
+```jsx
+function Person(name){
+    this.name = name;
+}
+
+const me = Person('yang');
+
+console.log(me instanceof Person); //true
+console.log(me instanceof Object); //true
+```
+
+
 ## 19.12 정적 프로퍼티/메서드
+- 생성자 함수 본인이 소유한 프로퍼티/메서드를 정적 프로퍼티/메서드라고 하며
+- prototype에 등록된 것이 아니기 때문에 인스터스에서는 접근할 수 없다.
+```jsx
+function Person(name){
+    this.name = name;
+}
+Person.staticProp = 'static prop';
+
+const me = Person('seyoung');
+me.staticProp; //error
+```
+![img_6.png](img_6.png)
+
 ## 19.13 프로퍼티 존재 확인
+### 19.13.1 in 연산자
+- 객체 내에 특정 프로퍼티가 존재하는지 여부 확인
+```jsx
+const person = {
+  name:'Lee',
+  address:'Seoul'
+}
+
+console.log('name' in person); //true
+```
+### 19.13.2 Object.prototype.hasOwnProperty 메서드
+- 특정 프로퍼티 존재 확인 가능
+```jsx
+console.log(person.hasOwnProperty('name')); //true
+```
+
+
 ## 19.14 프로퍼티 열거
+### 19.14.1 for...in문
+- 객체의 모든 프로퍼티를 열거하려면 for in 문 사용
+
+```jsx
+const person = {
+  name: 'Lee',
+  address:'Seoul'
+}
+
+for(let key in person){
+    console.log(key, person[key]);
+}
+// name, Lee
+// address, Seoul
+```
