@@ -105,3 +105,17 @@ console.log(obj.x); //1
 <br>
 
 # **19.4  리터럴 표기법에 의해 생성된 객체의 생성자 함수와 프로토타입**
+리터럴 표기법에 의해 생성된 객체는 프로토타입 constructor 프로퍼티가 가리키는 생성자 함수가 반드시 객체를 생성한 함수라 단정할 수 없다.
+
+<br>
+
+```js
+const obj = {};
+//Object 생성자 함수이다.(constructor 프로퍼티로 연결 되어있다.)
+console.log(obj.constructor === Object) //ture
+```
+
+Object 생성자함수에 인수를 전달하지 않거나 undefined, null을 인수로 전달하면서 호출하면 추상연산을 호출하여 Object.prototype을 프토로타입으로 갖는 빈객체를 생성한다.
+
+
+
