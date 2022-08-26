@@ -117,5 +117,42 @@ console.log(obj.constructor === Object) //ture
 
 Object 생성자함수에 인수를 전달하지 않거나 undefined, null을 인수로 전달하면서 호출하면 추상연산을 호출하여 Object.prototype을 프토로타입으로 갖는 빈객체를 생성한다.
 
+<br>
 
+# **19.5  프로토타입의 생성 시점**
+**프로토타입은 생성자 함수가 생성되는 시점에 더불어 생성된다.**
 
+<br>
+
+## **19.5.1  사용자 정의 생성자 함수와 프로토타입 생성 시점**
+construnctor(생성자 함수로서 호출할 수 있는 함수)는 함수 정의가 평가되어 함수 객체를 생성하는 시점에 프로토타입도 생성된다.
+
+```js
+//화살표 함수는 non-constructor다.
+const Person = name => {
+    this.name = name;
+}
+
+//non-constructor는 프로토타입이 생성되지 않는다.
+console.log(Person.prototype); //undefined
+```
+
+<br>
+
+## **19.5.2  빌트인 생성자 함수와 프로토타입 생성 시점**
+모든 빌트인 함수(Object, String, Number, Function, Array, Date, Promise)는 전역객체가 생성되는 시점에 프로토타입이 생성된다.
+<br>객체가 생성되기전 생성자함수, 프로토타입은 이미 객체화 되어 있어서 이후 객체를 생성하면 프로토타입은 객체 내부슬롯에 할당된다.
+
+<br>
+
+# **19.6  객체 생성 방식과 프로토타입의 결정**
+**프로토타입은 추상연산에 전달되는 인수에 의해 결정된다.**
+
+<br>
+
+# **19.6.1  객체 리터럴에 의해 생성된 객체의 프로토타입**
+객체 리터럴에 의해 생성되는 객체의 프로토타입은 Object.prototype이다.
+
+```js
+const obj = {x:1};
+```
