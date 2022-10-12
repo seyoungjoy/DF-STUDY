@@ -119,14 +119,64 @@ target.match(regExp); //["Is ", "thi", "s a", "ll "]
 <br>
 
 ## **31.5.3 반복 검색**
-* {x,y}는 앞의 패턴이 최소 x번, 최대 y번 반복되는 문자열을 의미한다.
-* {y}는 앞선 패턴이 y번 반복되는 문자열을 의미한다. {y} === {y,y} (최소, 최대값이 같다.)
-* {y,}는 앞선 패턴이 최소 y번 반복되는 문자열을 의미한다.
+* {x,y} : 앞의 패턴이 최소 x번, 최대 y번 반복되는 문자열을 의미한다.
+* {y} : 앞선 패턴이 y번 반복되는 문자열을 의미한다. {y} === {y,y} (최소, 최대값이 같다.)
+* {y,} : 앞선 패턴이 최소 y번 반복되는 문자열을 의미한다.
+* +&nbsp;: 앞선 패턴이 최소 한번 이상 반복 되는 문자열을 의미한다.
++ ? : 앞선 패턴이 최대 한 번(0번포함)이상 반복되는 문자열을 의미한다.
 
 ```js
-const target = 'A AA B BB Aa Bb AAA';
+const target = 'A AA B BB Aa Bb AAA AAB';
 const regExp = /A{1,2}/g;
-const regExp2 = /A{1}/g;
+const regExp2 = /A{2}/g;
+const regExp3 = /A{2,}/g;
+const regExp4 = /AA+/g;
+const regExp5 = /AA?A/g;
 
-target.match(regExp); // ['A', 'AA', 'A', 'AA', 'A']
+target.match(regExp); // ['A', 'AA', 'A', 'AA', 'A', 'AA']
+target.match(regExp2); // ['AA', 'AA', 'AA']
+target.match(regExp3); // ['AA', 'AAA','AA']
+target.match(regExp4); // ['AA', 'AAA', 'AA']
+target.match(regExp5); // ['AA', 'AAA', 'AA']
+```
+
+<br>
+
+## **31.5.4 OR 검색**
+```/A|B/```는 'A' 또는 'B'를 의미한다.(분해되지 않은 단어 레벨로 검색을 위해 +를 사용한다.)
+```js
+const target = 'A AA B BB Aa Bb';
+const regExp = /A|B/g;
+// /[AB]+/g; 와 동일
+const regExp2 = /A+|B/g;
+// A-Z(대문자) 한번이상 반복되는 패턴을 검색
+const regExp3 = /[A-Z]+/g;
+// A~Z, a~z 한번이상 반복되는 문자열을 전역 검색
+const regExp4 = /[A-Za-z]+/g;
+
+target.match(regExp); //["A", "A", "A", "B", "B","B", "A", "B"]
+target.match(regExp2); //["A", "AA", "B", "BB", "A","B"]
+target.match(regExp3); //["A", "AA", "B", "BB", "A","B"]
+target.match(regExp4); //["A", "AA", "B", "BB", "Aa", "Bb"]
+```
+<br>
+
+### 숫자 검색
+
+```js
+const target = 'AA BB 12,345';
+const regExp = /[0-9,]+/g; // /[\d,]+/g; 과 동일
+const regExp2 = /[\D,]+/g;
+
+target.match(regExp); //["12,345"]
+target.match(regExp2); //["AA BB ", ","] 공백, 특수문자 포함
+```
+
+<br>
+
+\w는 알파벳,숫자,언더스코어를 의미한다.([A-Za-z0-9_]와 같다.)<br>
+\W는 알파벳,숫자,언더스코어가 아닌 문자열을 의미한다.
+```js
+const target = 'Aa Bb 12,345 _$%&';
+let regExp = /[\w,]+/g;
 ```
