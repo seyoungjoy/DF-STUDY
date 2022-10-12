@@ -29,4 +29,104 @@ regexp.test(target); // true
 
 //생성자 함수를 이용하는 방법(변수를 동적으로 RegExp 객체를 생성 가능)
 const count = (str,char) => (str.match(new RegExp(char, 'gi')) ?? []).length;
+count('Is this all there is?','is'); // 3
+```
+
+<br>
+
+# **31.3 RegExp 메서드**
+
+<br>
+
+## **31.3.1 RegExp.prototype.exec**
+인수로 전달 받은 문자열에 대해 정규 표현식의 패턴을 검색하여 매칭 결과를 배열로 반환한다.
+```js
+const target = 'Is this all there is?';
+const regExp = /is/;
+regExp.exec(target);
+//["is", index:5, input: "Is this all there is?", groups:undefined]
+```
+
+<br>
+
+## **31.3.2 RegExp.prototype.test**
+인수로 전달받은 문자열에 검색 결과를 불리언 값으로 변환한다.
+
+<br>
+
+## **31.3.3 RegExp.prototype.match**
+인수로 전달받은 문자열의 검색결과를 배열로 반환한다.(exec와 비슷)
+>exec와 다른점은 g 플래그 사용시 exec는 첫번째 결과값만, match는 모든 결과값을 반환한다.
+ 
+```js
+const target = 'Is this all there is?';
+const regExp = /is/g;
+target.match(regExp);
+// ["is","is"]
+```
+
+<br>
+
+# **31.4 플래그**
+검색 방식을 설정하기 위해 사용한다.
+
+|       플래그       |     의미      |                  설명                  |
+|:---------------:|:-----------:|:------------------------------------:|
+|        i        | Ignore case |         대소문자를 구별하지 않고 패턴을 검색         |
+|        g        |   Global    | 대상 문자열 내에서 패턴과 일치하는 모든 문자열을 전역 검색한다. |
+|        m        | Multi line  |      문자열의 행이 바뀌더라도 패턴 검색을 계속한다.      |
+
+<br>
+
+>플래그는 순서 상관없이 여러개를 사용할 수 있으며, 매칭 대상이 1개 이상 존재해도 첫 번째 대상만 검색하고 종료한다.
+
+```js
+const target = 'Is this all there is?';
+target.match(/is/i);
+// ["is", index:5, input:..., groups: undefined]
+target.match(/is/g);
+// ["is", "is"]
+target.match(/is/ig);
+// ["is", "is", "is"]
+```
+
+<br>
+
+# **31.5 패턴**
+정규 표현식은 일정한 규칙(패턴)을 가진 문자열의 집합을 표현하기 위해 사용하는 형식 언어다.
+패턴은 /로 열고 닫으며 문자열의 따옴표는 생략한다.
+>문자열 내에 패턴과 일치하는 문자열이 존재할 때 **'정규표현식과 매치한다'** 고 표현한다.
+
+<br>
+
+## **31.5.1 문자열 검색**
+
+1. 정규표현식이 매치하는지 테스트
+2. 정규표현식의 매칭 결과를 구한다.(첫번째 결과만 반환)
+
+<br>
+
+## **31.5.2 임의의 문자열 검색**
+.(마침표)은 임의의 문자 한개를 의미한다.(내용 상관 X)
+
+```js
+// 임의의 3자리 문자열을 검색, 문자열 개수가 모자랄 경우 제외한다.
+const target = 'Is this all ';
+const regExp = /.../g;
+target.match(regExp); //["Is ", "thi", "s a", "ll "]
+```
+
+<br>
+
+## **31.5.3 반복 검색**
+* {x,y}는 앞의 패턴이 최소 x번, 최대 y번 반복되는 문자열을 의미한다.
+* {y}는 앞선 패턴이 y번 반복되는 문자열을 의미한다. {y} === {y,y} (최소, 최대값이 같다.)
+* {y,}는 앞선 패턴이 최소 y번 반복되는 문자열을 의미한다.
+
+```js
+const target = 'A AA B BB Aa Bb AAA';
+const regExp = /A{1,2}/g;
+const regExp2 = /A{1}/g;
+
+target.match(regExp); // ['A', 'AA', 'A', 'AA', 'A']
 ```
