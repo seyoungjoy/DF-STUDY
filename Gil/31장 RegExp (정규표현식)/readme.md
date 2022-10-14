@@ -178,5 +178,137 @@ target.match(regExp2); //["AA BB ", ","] 공백, 특수문자 포함
 \W는 알파벳,숫자,언더스코어가 아닌 문자열을 의미한다.
 ```js
 const target = 'Aa Bb 12,345 _$%&';
-let regExp = /[\w,]+/g;
+let regExp = /[\W,]+/g;
+
+target.match(regExp); // [' ', ' ', ',', ' ', '$%&']
+```
+
+<br>
+
+## **31.5.5 NOT 검색**
+[] **내**의 ^ (서컴플렉스)는 not의 의미이다.(패턴의 대문자와 동일하다.)<br>
+```/\D``` ```/\W```
+
+<br>
+
+## **31.5.6 시작 위치로 검색**
+[] **밖**의 ^은 문자열의 시작을 의미한다.
+
+
+## **31.5.7 마지막 위치로 검색**
+$는 문자열의 마지막을 의마한다.
+
+```js
+const target = 'https://ssd.designfever.com';
+const regExp = /^https/;
+const regExp2 = /com$/;
+
+//https로 시작하는지 검사
+regExp.test(target); //true
+//com으로 끝나는지 검사
+regExp2.test(target); //true
+```
+
+<br>
+
+# **31.6 자주 사용하는 정규표현식**
+
+<br>
+
+## **31.6.1 특정 단어로 시작하는지 검사**
+```js
+const url = 'https://example.com';
+
+//http:// 또는 https://로 시작하는지 검사(둘다 동일)
+/^https?:\/\//.test(url);
+/^(http|https):\/\//.test(url);
+```
+
+<br>
+
+## **31.6.2 특정 단어로 끝나는지 검사**
+
+```js
+const fileName = 'index.html';
+
+//html로 끝나는지 검사
+/html$/.test(fileName);
+```
+
+<br>
+
+## **31.6.3 숫자로만 이루어진 문자열인지 검사**
+처음(^)과 끝($)이 숫자이고 최소 한번 반복되는(+) 문자열과 매치
+
+```js
+const target = '12345';
+/^\d+$/.test(fileName);//true
+```
+
+<br>
+
+## **31.6.4 하나 이상의 공백으로 시작하는지 검사**
+\s는 여러가지 공백 문자(스페이스,탭 등)를 의미한다. [\t\r\n\v\f]과 동일하다.
+
+```js
+const target = ' hey!';
+/^[\s]+/.test(target);
+```
+
+<br>
+
+## **31.6.5 아이디로 사용 가능한지 검사**
+```js
+const id = 'abc123';
+//A~Z,a~z,0~9(알파벳, 숫자)로 시작하고 끝나며 4~10자리인지 검사한다.
+//(최소 4번 최대 10번 반복되는 문자열)
+/^[A-Za-z0-9]{4,10}$/.test(id); 
+```
+
+<br>
+
+## **31.6.6 메일 주소 형식에 맞는지 검사**
+
+```js
+const email = 'ungmo2@gmail.com';
+/^[0-9a-zA-z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/.test(email);
+```
+
+<br>
+
+```인터넷 메세지 형식 규약(RFC5322)에 맞는 정교한 패턴```
+
+<img src="email.PNG" width="100%" alt="">
+
+<br>
+
+## **31.6.7 핸드폰 번호 형식에 맞는지 검사**
+
+```js
+const cellphone = '010-1234-5678';
+/^\d{3}-\d{3,4}-\d{4}$/.test(cellphone);
+```
+
+<br>
+
+## **31.6.8 특수 문자 포함 여부 검사**
+특수문자가 포함되어 있는지 검사한다.(A-Za-z0-9 이외의 문자)
+
+```js
+const target = 'abc#123';
+(/[^A-Za-z0-9]/gi).test(target); //true
+
+//특수문자를 선택적으로 검사
+(/[\{\}\[\]\/?.,ㅣ:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi).test(target); //true
+
+//한글검사
+/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(target)//false
+```
+<br>
+
+특수 문자를 제거할 때는 ```String.prototype.replace```메서드를 사용한다.
+
+```js
+const target = 'abc#123';
+target.replace(/[^A-Za-z0-9]/gi,''); // abc123
 ```
