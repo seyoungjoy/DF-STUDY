@@ -15,15 +15,16 @@ var date = new Date();
 console.log(date)
 // Fri Oct 14 2022 14:58:19 GMT+0900 (한국 표준시) 
 // --> RFC 형식
-date.toISOString()
-// ISO 형식으로 변환 해서 많이 사용함
+date.toISOString() // ISO 형식으로 변환 해서 많이 사용함
+// 2017-03-16T17:40:00+09:00
+// --> ISO 형식
 ```
-2. **날짜 포맷 변경에 어려움**
+2. **날짜 포맷 변경이 귀찮음**
 ```jS
 var a = '${date.getFullYear()}년 ' +
-    '${date.getMonth() + 1 }월 ' + // 특히 JS에서 0월은 1월임
+    '${date.getMonth() + 1 }월 ' + // 0월이 1월임
     '${date.getDate()}일 입니다.'
-console.log(a)
+// 하나 하나 땡겨와서 포맷팅 해서 표기해야함
 ```
 3. 시간 덧셈을 JS 맘대로함
 ```jS
