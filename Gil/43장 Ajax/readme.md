@@ -192,4 +192,166 @@ const xhr = new XMLHttpRequest();
 2. 필요에 따라 XMLRequest.prototype.setRequestHeader 메서드로 특정 HTTP 요청의 헤더 값을 설정한다.
 3. XMLHttpRequest.prototype.send 메서드로 HTTP 요청을 전송한다.
 
-```js```
+```js
+const xhr = new XMLHttpRequest();
+
+// HTTP 요청 초기화
+xhr.open('GET','/users');
+
+//HTTP 요청 헤더 설정
+//클라이언트가 서버로 전송할 데이터의 MIME 타입 지정: json
+
+//HTTP 요청 전송
+xhr.send();
+```
+
+<br>
+
+```XMLHttpRequest.prototype.open```
+open 메서드는 서버에 전송할 HTTP 요청을 초기화한다.
+
+```js
+//대괄호 부분은 있어도 되고, 없어도 되는 선택사항을 의미
+xhr.open(method, url[, async]);
+xhr.open(method, url, async);
+xhr.open(method, url);
+```
+
+|  매개변수  | 설명                                          |
+|:------:|:--------------------------------------------|
+| method | HTTP 요청 메서드("GET","POST","PUT","DELETE" 등)  |
+|  url   | HTTP 요청을 전송할 URL                            |
+| async  | 비동기 요청 여부, 옵션으로 기본값은 true이며, 비동기 방식으로 동작한다. |
+
+HTTP 요청 메서드는 클라이언트가 서버에게 요청의 종류와 목적(리소스에 대한 행위)을 알리는 방법이다.
+
+| HTTP 요청 메서드 |       종류       |           목적            | 페이로드<br>(전송되는 데이터) |
+|:-----------:|:--------------:|:-----------------------:|:------------------:|
+|     GET     | index/retrieve |      모든/특정 리소스 취득       |         X          |
+|    POST     |     create     |         리소스 생성          |         O          |
+|     PUT     |    replace     |       리소스의 전체 교체        |         O          |
+|    PATCH    |     modify     |       리소스의 일부 수정        |         O          |
+|   DELETE    |     delete     |      모든/특정 리소스 삭제       |         X          |
+
+<br>
+
+📌 페이로드(payload) <br>
+실제 데이터에서의 payload는 아래의 json에서 “data”입니다. 그 이외의 데이터들은 전부 통신을 하는데 있어 용이하게 해주는 부차적인 정보들입니다.
+```json
+{
+  "status":"",
+  "from": "localhost",
+  "to": "http://melon ...",
+  "method": "GET",
+  "data": {"message": "There is a cuty dog!"}
+}
+```
+
+<br>
+
+```XMLHttpRequest.prototype.send```
+send 메서드는 open 메서드로 초기화된 HTTP 요청을 서버에 전송한다.
+* GET 요청 메서드의 경우 데이터를 URL의 일부분인 쿼리 문자열로 서버에 전송된다.
+* POST 요청 메서드의 경우 데이터(페이로드)를 요청 몸체에 담아 전송한다.
+
+```js
+xhr.send(JSON.stringify({id:1, content:'HTML', completed:false}));
+```
+**HTTP 요청 메서드가 GET인 경우 send 메서드에 페이로드로 전달한 인수는 무시되고 요청 몸체는 null로 설정된다.**
+
+<br>
+
+```XMLHttpRequest.prototype.setRequestHeader```
+setRequestHeader 메서드는 특정 HTTP 요청의 헤더 값을 설정한다.
+> 반드시 open 메서드를 호출한 이후에 호출해야 한다.
+
+
+##**content-type**
+|   MIME 타입   | 서브타입                                               |
+|:-----------:|:---------------------------------------------------|
+|    text     | text/plain, text/html, text/css, text/javascript   |
+| application | application/json, application/x-www-form-urlencode |
+|  multipart  | multipart/formed-data                              |
+
+
+```js
+//요청 몸체에 담아 서버로 전송할 페이로드의 MIME 타입을 지정하는 예다.
+
+//XMLHttpRequest 객체 생성
+const xhr = new XMLHttpRequest();
+
+xhr.open('POST','/users');
+
+// HTTP 요청 헤더 설정
+// 클라이언트가 서버로 전송할 데이터의 MIME 타입 지정:json
+xhr.setRequestHeader('content-type','appliction/json');
+
+//HTTP 요청 전송
+xhr.send(JSON.stringify({id:1, content:'HTML', completed:false}));
+
+//서버가 응답할 데이터의 MIME 타입 지정: json
+xhr.setRequestHeader('accept','application/json');
+```
+
+> accept 헤더를 설정하지 않으면 send 메서드가 호출될 때 Accept 헤더가 */*으로 전송된다.
+
+<br>
+
+##**43.3.4 HTTP 응답처리**
+서버가 전송한 응답을 처리하려면 XMLHttpRequest 객체가 발생시키는 이벤트를 캐치 해야하는데 HTTP 요청의 현재 상태를 나타내는 readyState 프로퍼티 값이 변경된 경우 발생하는 readystatechange 이벤트를 캐치하여 HTTP 응답을 처리할 수 있다.(XMLHttpRequest 객체는 브라우저에서 제공하는 WebAPI이므로 브라우저 환경에서 실행햐야 한다.)
+
+```js
+const xhr = new XMLHttpRequest();
+
+//HTTp 요청 초기화
+xhr.open('GET', 'https://jsonplaceholder.typicode.com/todos/1');
+
+//HTTP 요청 전송
+xhr.send();
+
+//readystatechange 이벤트는 HTTP 요청의 현재 상태를 나타내는
+//readyState 프로퍼티가 변경될때 마다 발생한다.
+xhr.onreadystatechange = () =>{
+    
+    //readyState 프로퍼티는 HTTP 요청의 현재 상태를 나타낸다.
+    //readyState 프로퍼티 값이 4(XMLHttpRequet.DONE)가 아니면 서버 응답이 완료되지 않은 상태이다.
+    if(xhr.readyState !== XMLHttpRequet.DONE) return;
+    
+    //status 프로퍼티는 응답 상태 코드를 나타낸다.
+    //status 프로퍼티 값이 200이면 정상적으로 응답된 상태
+    //status 프로퍼티 값이 200이 아니면 에러가 발생한 상태
+    //정상적으로 응답됐으면 response 프로퍼티에 서버의 응답 결과가 담겨있다.
+    
+    if(xhr.status === 200){
+        console.log(JSON.parse(xhr.response));
+        // {userId: 1, id:1, title: "delectus aut autem", completed:false}
+    }else{
+        console.error('Error', xhr.status, xhr.statusText);
+    }
+}
+```
+
+readystatechange 이벤트 대신 load 이벤트를 캐치해도 된다. load 이벤트는 HTTP 요청이 성공적으로 완료된 경우 발생한다.
+따라서 **xhr.readyState 가 XMLHttpRequest.DONE 인지 확인할 필요가 없다.**
+
+```js
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://jsonplaceholder.typicode.com/todos/1');
+
+//HTTP 요청 전송
+xhr.send();
+
+//load 이벤트는 HTTP 요청이 성공적으로 완료된 경우 발생한다.
+xhr.onload = () => {
+    //status 프로퍼티는 응답 상태 코드를 나타낸다.
+    //status 프로퍼티 값이 200이면 정상적으로 응답된 상태
+    //status 프로퍼티 값이 200이 아니면 에러가 발생한 상태
+    
+    if(xhr.status === 200){
+        conosole.log(JSON.parse(xhr.response));
+        // {userId: 1, id:1, title: "delectus aut autem", completed:false}
+    }else{
+        console.error('Error', xhr.status, xhr.statusText);
+    }
+}
+```
