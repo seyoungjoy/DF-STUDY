@@ -100,7 +100,7 @@ xhr.onload 이벤트 핸들러는 load 이벤트가 발생하면 태스크 큐�
 ```js
 //GET 요청을 위한 비동기 함수
 const get = (url, successCallback, failureCallback) => {
-    const xhr.XMLHttpRequest();
+    const xhr = new xhr.XMLHttpRequest();
     xhr.open('GET', url);
     xhr.send();
 
@@ -251,3 +251,141 @@ promiseGet('https://jsonplace..../posts/1');
 |pending|비동기 처리가 아직 수행되지 않은 상태|프로미스가 생성된 직후 기본 상태|
 |fulfilled|비동기 처리가 수행된 상태(성공)|resolve 함수 호출|
 |rejected|비동기 처리가 수행된 상태(실패)|reject 함수 호출|
+
+생성된 직후 프로미스는 pending(수행되지않은)상태다. 이후 과정은 다음과 같이 변경된다.**(resolve, reject함수를 호출 하는것으로 결정)**
+* 비동기 처리 성공 : resolve 함수를 호출해 프로미스를 fulfilled 상태로 변경
+* 비동기 처리 실패 : reject 함수를 호출해 프로미스를 rejected 상태로 변경
+
+fulfilled(성공), reject(실패)상태를 settled 상태라고 한다. (비동기 처리가 수행된 상태)
+settled 상태가 되면 더는 다른 상태로 변화할 수 없다.
+
+```js
+//프로미스는 비동기 처리 상태와 처리 결과를 관리하는 객체이다.
+const resolve = new Promise(resolve => resolve(1));//성공
+const reject = new Promise((_, reject) => reject(new Error('error occured')));//실패
+```
+
+<br>
+
+# **프로미스의 후속 처리 메서드**
+프로미스의 처리결과를 위해 후속메서드 then, catch, finally를 제공한다.
+**프로미스의 비동기 처리 상태가 변화하면 후속 처리 메서드에 인수로 전달한 콜백함수가 선택적으로 호출된다.**
+
+<br>
+
+## **45.3.1 Promise.prototype.then(두개의 인수를 받는다)**
+* 첫 번째 콜백 함수는 fulfilled 상태(성공)가 되면 호출된다.(프로미스의 비동기 처리 결과를 인수로 전달받는다.)
+* 두 번째 콜백 함수는 프로미스가 reject 상태(실패)가 되면 호출된다.(프로미스의 비동기 처리 결과를 인수로 전달받는다.)
+
+```js
+new Promise(resolve => resolve('fulfilled')).then(v => console.log(v), e=> console.error(e)); //fulfilled(성공)
+//실패를 두번째 인수로 받아야 하기때문에 _(언더스코어)를 첫번째 인수로 두는것같다.
+new Promise((_,reject) => reject(new Error('rejected'))).then(v => console.log(v), e=> console.error(e)); //Error: rejected(실패)
+```
+> 콜백함수가 프로미스가 아닌 값을 반환하면 그 값을 암묵적으로 resolve 또는 reject하여 프로미스를 생성해 반환한다.
+ 
+<br>
+
+## **45.3.2 Promise.prototype.catch(한개의 인수를 받는다)**
+rejected(실패)상태인 경우만 호출된다.
+
+```js
+//Error: rejected (두개 메서드가 동일하게 동작한다.)
+new Promise((_,reject) => reject(new Error('rejected'))).catch(e => console.log(e));
+new Promise((_,reject) => reject(new Error('rejected'))).then(undefined, e => console.log(e));
+```
+
+<br>
+
+## **45.3.3 Promise.prototype.finally(한개의 인수를 전달 받는다.)**
+성공,실패와 상관없이 무조건 한 번 호출된다.(상태와 상관없이 공통적으로 수행해야 할때 사용한다.)
+
+```js
+//get 비동기 함수를 사용해 후속처리 구현
+const promiseGet = url =>{
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.send();
+    
+    xhr.onload = () =>{
+        if(xhr.status === 200){
+            resolve(JSON.parse(xhr.response));
+        }else{
+            reject(new Error(xhr.status));
+        }
+    }
+}
+
+promiseGet('https://json.../posts/1')
+    .then(res => console.log(res))
+    .catch(err => console.error(err))
+    .finally(()=> console.log('finally!'));
+```
+
+<br>
+
+# **45.4 프로미스의 에러 처리**
+프로미스의 비동기 처리에서 발생한 에러는 then메서드의 두번째 콜백함수와 catch로 처리할 수 있다.
+```js
+const wrongUrl = 'https://json.../XXX/1';
+const promiseGet = url =>{
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.send();
+
+    xhr.onload = () =>{
+        if(xhr.status === 200){
+            resolve(JSON.parse(xhr.response));
+        }else{
+            reject(new Error(xhr.status));
+        }
+    }
+}
+
+//then Error:404
+promiseGet(wrongUrl).then(
+    res => console.log(res),
+    err => console.error(err)
+);
+
+//가독성이 떨어지며 첫번째 콜백함수에서 발생한 에러를 캐치못한다.(catch 메서드 권장)
+promiseGet(wrongUrl)
+    .then(res => console.log(res))
+    .then(undefined, err => console.error(err));
+
+//catch Error:404
+promiseGet(wrongUrl)
+    .then(res => console.log(res))
+    .catch(err => console.error(err));
+```
+
+<br>
+
+# **45.5 프로미스 체이닝**
+후속 처리 메서드를 이용하여 콜백 헬을 처리해보자.
+
+```js
+const url = 'https://json....com';
+const promiseGet = url =>{
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.send();
+
+    xhr.onload = () =>{
+        if(xhr.status === 200){
+            resolve(JSON.parse(xhr.response));
+        }else{
+            reject(new Error(xhr.status));
+        }
+    }
+}
+
+//id가 1인 post의 userId를 취득
+promiseGet(`${url}/posts/1`)
+//취득한 post의 useId로 user 정보를 취득
+.then(({ useId }) => promiseGet(`${url}/user/${`userId`}`))
+.then(userInfo => console.log(userIndo))
+.catch(err => console.error(err));
+```
+
+> then, catch, finally 후속처리 메서드는 언제나 프로미스를 반환하므로 연속적으로 호출할 수 있다. 이를 프로미스 체이닝이라 한다.
