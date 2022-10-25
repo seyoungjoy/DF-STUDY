@@ -389,3 +389,69 @@ promiseGet(`${url}/posts/1`)
 ```
 
 > then, catch, finally 후속처리 메서드는 언제나 프로미스를 반환하므로 연속적으로 호출할 수 있다. 이를 프로미스 체이닝이라 한다.
+ 
+<br>
+
+# **45.6 프로미스의 정적 메서드**
+Promise는 주로 생성자 함수로 사용되지만 함수도 객체이므로 메서드를 가질 수 있다.
+
+<br>
+
+## **45.6.1 Promise.resolve / Promise.reject**
+이미 존재하는 값을 래핑하여 프로미스를 생성하기 위해 사용한다.
+
+resolve 메서드는 인수로 전달받은 값을 resolve 하는 프로미스를 생성한다.
+
+<br>
+
+### **resolve**
+```js
+//배열을 resolve 하는 프로미스를 생성
+const resolvedPromise = Promise.resolve([1,2,3]);
+resolvedPromise.then(console.log); //[1,2,3]
+
+//위와 동일
+const resolvedPromise2 = new Promise(resolve => resolve([1,2,3]));
+resolvedPromise2.then(console.log); //[1,2,3]
+```
+
+### **reject**
+```js
+//에러 객체를 reject하는 프로미스를 생성
+const rejectPromise = Promise.reject(new Error("error!"));
+rejectPromise.catch(console.log); // Error: error!
+
+//위와 동일
+const rejectPromise2 = new Promise((_, reject) => reject(new Error('error!')));
+rejectPromise2.catch(console.log); // Error: error!
+```
+
+<br>
+
+## **45.6.2 Promise.all**
+여러 개의 비동기 처리를 모두 병렬 처리할 때 사용한다.
+요소로 갖는 배열 등의 이터러블을 인수로 전달 받는다. 전달받은 모든 프로미스가 모두 fulfilled 상태가 되면 모든 처리 결과를 배열에 저장해 새로운 프로미스를 반환한다.
+
+```js
+const requestData1 = () => new Promise(resolve => setTimeout(() => resolve(1),3000));
+const requestData2 = () => new Promise(resolve => setTimeout(() => resolve(2),2000));
+const requestData3 = () => new Promise(resolve => setTimeout(() => resolve(3),1000));
+
+Promise.all([requestData1(),requestData2(),requestData3()]).then(console.log).catch(console.error);
+```
+
+모든 프로미스가 fulfilled 상태가 되면 resolve된 처리 결과(위 예제의 경우 1,2,3)를 모두 배열에 저장해 새로운 프로미스를 반환한다.
+> 첫번째 프로미스가 가장 나중에 fulfilled 상태가 되어도 차례대로 배열에 저장해 처리 순서가 보장된다.
+
+<br>
+
+## **45.6.3 Promise.race**
+프로미스를 요소로 갖는 배열 등의 이터러블을 인수로 전달받는다.
+all과 다르게 먼저 fulfilled 상태가 된 프로미스의 처리결과를 resolve하는 새로운 프로미스를 반환한다.
+
+>메서드에 전달된 프로미스가 하나라도 rejected 상태가 되면 에러를 reject하는 새로운 프로미스를 즉시 반환한다.
+ 
+<br>
+
+## **45.6.4 Promise.allSettled**
+전달받은 프로미스가 모두 settled 상태(비동기 처리가 수행된 상태, fulfilled rejected 상태)가 되면 처리 결과를 배열로 반환한다.
