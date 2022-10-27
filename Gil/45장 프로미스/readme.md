@@ -389,6 +389,7 @@ promiseGet(`${url}/posts/1`)
 ```
 
 > then, catch, finally 후속처리 메서드는 언제나 프로미스를 반환하므로 연속적으로 호출할 수 있다. 이를 프로미스 체이닝이라 한다.
+
  
 <br>
 
@@ -455,3 +456,141 @@ all과 다르게 먼저 fulfilled 상태가 된 프로미스의 처리결과를 
 
 ## **45.6.4 Promise.allSettled**
 전달받은 프로미스가 모두 settled 상태(비동기 처리가 수행된 상태, fulfilled rejected 상태)가 되면 처리 결과를 배열로 반환한다.
+
+```js
+Promise.allSettled([
+    new Promise(resolve => setTimeout(() => resolve(1), 2000)),
+    new Promise((_,reject) => setTimeout(() => reject(new Error('error!')), 1000))
+]).then(console.log);
+
+/*
+[
+    {status: "fulfilled", value:1},
+    {status: "rejected", reason:Error:error! at <anonymous>:3:54}
+]
+*/
+```
+> allSettled 메서드가 반환한 배열에는 fulfilled 또는 rejected 상태와는 상관없이 Promise, allSettled 메서드가 인수로 전달받은 모든 프로미스들의 처리 결과가 모두 담겨있다.
+
+* **fulfilled :** status 프로퍼티와 처리 결과를 나타내는 value 프로퍼티를 갖는다.
+* **rejected :** status 프로퍼티와 에러를 나타내는 reason 프로퍼티를 갖는다.
+
+<br>
+
+# **45.7 마이크로태스크 큐**
+**마이크로태스크 큐**는 **태스크 큐**보다 우선순위가 높다. 이벤트 루프는 콜 스택이 비면 먼저 마이크로태스크 큐에서 대기하고 있는 함수를 가져와 실행한다. 이후 마이크로태스크 큐가 비면 태스크 큐에서 대기하고 있는 함수를 가져와 실행한다.
+
+>**마이크로태스크 큐 :** 프로미스의 후속 처리 메서드의 콜백함수 <br>
+>**태스크큐 :** 비동기 함수의 콜백 함수나 이벤트 핸들러
+
+```js
+// 2 -> 3 -> 1
+setTimeout(() => console.log(1),0); //태스크큐
+
+Promise.resolve()
+.then(() => console.log(2)) //마이크로태스크 큐
+.then(() => console.log(3)); //마이크로태스크 큐
+```
+
+<br>
+
+# **45.7 fetch**
+HTTP 요청 전송 기능을 제공하는 클라이언트 사이드 Web API다.
+fetch함수에는 HTTP 요청을 전송할 URL, HTTP 요청메서드, HTTP 요청헤더, 페이로드 등을 설정한 객체를 전달한다.
+
+```js
+const promise = fetch(url[, options]) // options가 있어도 없어도 됨
+```
+
+Response 객체를 래핑한 프로미스를 반환하므로 후속 처리 메서드 then을 통해 프로미스가 resolve한 Response 객체를 전달받을 수 있다.
+
+> fetch 함수가 반환하는 프로미스는 기본적으로 404 Not Found나 500 Internal Sever Error와 같은 HTTP 에러가 발생해도 에러를 reject하지 않고 불리언 타입의 ok상태를 false로 설정한 Response 객체를 resolve 한다.
+> 
+> 오프라인 등의 네크워크 장애나 CORS 에러에 의해 요청이 완료되지 못한 경우에만 프로미스를 reject한다.
+ 
+```js
+const wrongUrl = 'https://json.../XXX/1';
+fetch(wrongUrl)
+    //response는 HTTP 응답을 나타내는 Response 객체
+.then(response => {
+    if(!response.ok) throw new Error(response.statusText);
+    return response.json();
+})
+.then(todo => console.log(todo))
+.catch(err => console.error(err));
+```
+
+<br>
+
+```axios```는 모든 HTTP 에러를 reject하는 프로미스를 반환한다. 따라서 catch에서 모든 에러를 처리할 수 있다.
+
+```js
+const request = {
+    get(url){
+        return fetch(url);
+    },
+    post(url, payload){
+        return fetch(url, {
+            method: 'POST',
+            headers: {'content-Type':'application/json'},
+            body: JSOn.stringify(payload)
+        });
+    },
+    patch(url, payload){
+        return fetch(url,{
+            method: 'PATCH',
+            headers: {'content-Type':'application/json'},
+            body: JSON.stringify(payload)
+        });
+    },
+    delete(url){
+        return fetch(url, {method: 'DELETE'});
+    }
+};
+
+
+// 1. GET 요청
+// {useId: 1, id:1, title:"...", completed:false}
+request.get('https://jsonplaceholder.../todos/1')
+.then(response => {
+   if(!response.ok) throw new Error(response.statusText);
+   return response.json();
+})
+.then(todos => console.log(todos))
+.catch(err => console.error(err));
+
+
+// 2. POST 요청
+// {useId: 1, title:"javasciprt", completed:false, id: 201}
+request.post('https://jsonplaceholder.../todos',{
+    userId: 1,
+    title:'javascript',
+    completed: false
+}).then(response => {
+    if(!response.ok) throw new Error(response.statusText);
+    return response.json();
+})
+    .then(todos => console.log(todos))
+    .catch(err => console.error(err));
+
+
+// 3. PATCH 요청
+// {useId: 1, title:"deletus...", completed:true}
+request.patch('https://jsonplaceholder...',{
+    completed: true
+}).then(response => {
+    if(!response.ok) throw new Error(response.statusText);
+    return response.json();
+})
+.then(todos => console.log(todos))
+.catch(err => console.error(err));
+
+
+// 4. DELETE 요청
+// {}
+request.delete('https://jsonplaceholder...')
+.then(response => {
+    if(!response.ok) throw new Error(response.statusText);
+    return response.json();
+})
+```
