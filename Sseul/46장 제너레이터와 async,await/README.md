@@ -169,7 +169,7 @@ async function getUserAll() {
 getUserAll();
 ```
 
-- async 함수는 async키워드를 사용해 정의하며 언제나 프로미스를 반환한다
+- await 키워드는 반드시 async 함수 내부에서 사용하며 언제나 프로미스를 반환한다
 - await 키워드는 프로미스가 settled 상태가 될 때까지 일시 중지하다가
   settled 상태가 되면 프로미스가 resolve한 처리 결과를 재개한다.
 - 반드시 async 함수 내부에서 프로미스 앞에 사용해야 한다.
