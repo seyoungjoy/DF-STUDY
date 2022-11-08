@@ -74,10 +74,59 @@ console.log(iterator.next()); // {value:undefined,done:true}
 <br>
 
 # **34.3 for...of 문**
+이터러블을 순회하면서 이터러블 요소를 변수에 할당한다.
+
+```js
+for (const item of [1,2,3]){
+    console.log(item);
+    //1
+    //2
+    //3
+}
+```
+
+이터레이터의 next 메서드를 호출하여 이터러블을 순회하며 next 메서드가 반환한 이터레이터 리절트 객체의 value 프로퍼티 값을 for...of 문의 변수에 할당한다. (done 프로퍼티값이 true면 순회를 중단한다.)
+
 
 <br>
 
 # **34.4 이터러블과 유사 배열 객체**
+유사 배열 객체는 length 프로퍼티를 갖기 떄문에 for문으로 순회할 수 있고, 인덱스를 나타내는 숫자형식의 문자열을 프로퍼티 키로 가지므로 마치 배열처럼 인덱스로 프로퍼티 값에 접근할 수 있다.
+
+```js
+const arrayLike = {
+    0: 1,
+    1: 2,
+    2: 3,
+    length: 3
+};
+
+//유사배열 객체 for문 순회
+for (let i = 0; i < arrayLike.length; i++){
+    //마치 배열처럼 인덱스로 프로퍼티 값에 접근할 수 있다.
+    console.log(arrayLike[i]); // 1,2,3
+}
+```
+
+> 유사배열객체는 이터러블이 아니기 때문에 **(Symbol.iterator 메서드가 없다.)** for...of 문으로 순회할 수 없다.
+
+<br>
+
+arguments, NodeList, HTMLCollection은 유사 배열 객체이면서 이터러블이다.(length프로퍼티를 가지며 인덱스로 접근할 수 없으므로 유사배열 객체이다.)
+
+Array.from 메서드는 유사배열객체 또는 이터러블을 인수로 전달받아 **배열로 변환하여 반환**한다.
+
+```js
+const arrayLike = {
+    0: 1,
+    1: 2,
+    2: 3,
+    length: 3
+};
+
+const arr = Array.form(arrayLike);
+console.log(arr); // [1,2,3]
+```
 
 <br>
 
