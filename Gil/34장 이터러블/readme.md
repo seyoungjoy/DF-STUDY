@@ -131,7 +131,70 @@ console.log(arr); // [1,2,3]
 <br>
 
 # **34.5 이터레이션 프로토콜의 필요성**
+이터레이션 프로토콜은 다양한 데이터 공급자가 하나의 순회방식을 갖도록 규정하여 데이터 소비자가 효율적으로 다양한 데이터 공급자를 사용할 수 있도록 **데이터 소비자와 데이터 공급자를 연결하는 인터페이스의 역할을 한다.**
 
 <br>
 
 # **34.6 사용자 정의 이터러블**
+
+<br>
+
+## **34.6.1 사용자 정의 이터러블 구현**
+이터레이션 프토로콜을 준수하지 않는 일반객체도 이터레이션 프로토콜을 준수하도록 구현하면 사용자 정의 이터러블이 된다.
+
+```js
+const fibonacci = {
+    [Symbol.iterator](){
+        let [pre,cur] = [0,1];
+        const max = 10;
+        
+      //Symbol.iterator 메서드는 next 메서드를 소유한 이터레이터를 반환해야한다.
+      // next 메서드는 이터레이터 리절트 객체를 반환해야 한다. 
+      return {
+       next(){
+           [pre,cur] = [cur, pre + cur];
+           
+           //이터레이터 리절트 객체를 반환
+           return {value:cur, done: cur >= max};
+       }
+      };
+    }
+}
+
+for (const num of fibonacci){
+    console.log(num); // 1 2 3 4 5 8
+}
+```
+
+<br>
+
+## **34.6.2 이터러블을 생성하는 함수**
+
+```js
+const fibonacciFunc = function(max) {
+    let [pre,cur] = [0,1];
+    
+    return {
+     [Symbol.iterator](){
+      return {
+       next(){
+        [pre,cur] = [cur, pre + cur];
+
+        //이터레이터 리절트 객체를 반환
+        return {value:cur, done: cur >= max};
+       }
+      };
+     }
+    }
+}
+
+//외부에서 최대값을 전달한다.
+for (const num of fibonacciFunc(10)){
+    console.log(num); // 1 2 3 4 5 8
+}
+```
+
+<br>
+
+## **34.6.3 이터러블이면서 이터레이터인 객체를 생성하는 함수**
+이터레이터를 생성하려면 이터러블의 Symbol.iterator 메서드를 호출해야 한다.
