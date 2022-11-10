@@ -197,4 +197,84 @@ for (const num of fibonacciFunc(10)){
 <br>
 
 ## **34.6.3 이터러블이면서 이터레이터인 객체를 생성하는 함수**
-이터레이터를 생성하려면 이터러블의 Symbol.iterator 메서드를 호출해야 한다.
+이터레이터를 생성하려면 이터러블의 Symbol.iterator 메서드를 호출해야 한다. 이터러블이면서 이터레이터인 객체를 생성하면 Symbol.iterator 메서드를 호출하지 않아도 된다.
+
+```js
+{
+    // 이터레이터를 반환하는 Symbol.iterator 메서드와 이터레이션 리절트 객체를 반환하는 next 메서드를 소유한다.
+    [Symbol.iterator]() {return this;},
+    next(){
+        return {value: any, done:boolean};
+    }
+}
+```
+
+이터러블이면서 이터레이션 객체를 생성하여 반환하는 함수로 변경하면 아래와 같다.
+
+```js
+//이터러블이면서 이터레이터인 객체를 반환하는 함수
+const fibonacciFunc = function(max){
+    let [pre,cur] = [0, 1];
+    
+    //Symbol.iterator 메서드와 next 메서드를 소유한 이터러블이면서 이터레이터인 객체를 반환
+    return{
+        [Symbol.iterator]() { return this;},
+     
+        //next 메서드는 이터레이터 리절트 객체를 반환
+        next(){
+            [pre, cur] = [cur, pre + cur];
+            return {value:cur, done: cur >= max};
+        }
+    }
+}
+
+// iter는 이터러블이면서 이터레이터다.
+let iter = fibonacciFunc(10);
+
+// iter는 이터러블이므로 for...of 문으로 순회할 수 있다.
+for (const num of iter) {
+    console.log(num); // 1 2 3 5 8
+}
+
+//iter는 이터러블이면서 이터레이터다.
+iter = fibonacciFunc(10);
+
+console.log(iter.next());//{value:1, done:false}
+console.log(iter.next());//{value:2, done:false}
+console.log(iter.next());//{value:3, done:false}
+console.log(iter.next());//{value:5, done:false}
+console.log(iter.next());//{value:8, done:false}
+console.log(iter.next());//{value:13, done:true}
+```
+
+<br>
+
+## **34.6.4 무한 이터러블과 지연 평가**
+지연평가는 데이터가 필요한 시점 이전까지는 미리 데이터를 생성하지 않다가 데이터가 필요한 시점이 되면 그때야 비로소 데이터를 생성 하는 기법이다. next메서드를 호출할때 부터 데이터를 생성한다.
+
+> 지연평가를 통해서 불필요한 데이터를 미리 생성하지 않고 필요한 데이터를 필요한 순간에 빠르게 실행 할수 있고, 불필요한 메모리를 소비하지 않아 무한도 표현할수 있는 장점이 있다.
+
+```js
+const fibonacciFunc = function () {
+    let [pre, cur] = [0, 1];
+    
+    return {
+        [Symbol.iterator]() {return this;},
+        next() {
+            [pre, cur] = [cur, pre + cur];
+            
+            //무한 생성을 위해서 done 프로퍼티를 생략한다.
+            return {value : cur};
+        }
+    }
+};
+
+for (const num of fibonacciFunc()){
+    if (num > 10000) break;
+    console.log(num); // 1, 2, 3, 5, 8 ... 6765
+}
+
+//배열 디스트럭처링 할당을 통해 무한 이터러블에서 3개의 요소만 취득한다.
+const [f1, f2, f3] = fibonacciFunc();
+console.log(f1, f2, f3); // 1 2 3
+```
