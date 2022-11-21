@@ -69,7 +69,7 @@ DOM을 구성하는 노드객체는 자신의 구조와 정보를 제어할수 �
 
 <br>
 
-## **39.2 요소 노드 취득**
+# **39.2 요소 노드 취득**
 요소 노드의 취득은 HTML 요소를 조작하는 시작점이다.
 
 <br>
@@ -81,10 +81,61 @@ HTML 요소에 id 어트리뷰트를 부여하면 id값과 동일한 이름의 �
 
 ```html
 <div id="gil"></div>
+<div id="gil2"></div>
 
 <script>
     console.log(gil === document.getElementById("gil")) //true
     delete gil;
     console.log(gil); // <div id="gil"></div>
+    
+    //id값과 동일한 이름의 전역변수가 있으면
+    //노드객체가 재할당되지 않는다.
+    let gil2 = 1;
+    console.log(gil2);//1
+    
+</script>
+```
+
+<br>
+
+## **39.2.2 태그 이름을 이용한 요소 노드 취득**
+getElementsByTagName 메서드는 인수로 전달한 태그이름을 가진 모든 요소노드들을 탐색하여 반환한다.(DOM컬렉션 객체인 HTMLCollection 객체를 반환)
+
+<br>
+
+## **39.2.3 class를 이용한 요소 노드 취득**
+getElementsByClassName 메서드는 인수로 전달한 class 어트리뷰트 값(클래스명)을 가진 모든 요소노드들을 탐색하여 반환한다.(DOM컬렉션 객체인 HTMLCollection 객체를 반환)
+
+<br>
+
+## **39.2.4 CSS 선택자를 이용한 요소 노드 취득**
+querySelector 메서드는 인수로 전달한 CSS 선택자를 만족 시키는 하나의 요소노드를 탐색하여 반환한다.(NodeList 객체를 반환)
+
+* (CSS선택자를 만족시키는 요소 노드가 )여러 개인 경우 첫번째 요소노드만 반환
+* (CSS선택자를 만족시키는 요소 노드가) 존재하지 않는 경우 null 반환(빈 NodeList 객체 반환)
+* CSS 선택자가 문법에 맞지 않는 경우 DOMException 에러가 발생한다.
+* HTML문서의 모든 요소 노드를 취득하려면 querySelectorAll 메서드에 *을 전달한다.
+
+> id값이 있는 요소 노드를 취득할때는 get 
+
+```html
+<div id="gil">
+    <ul>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+<script >
+    const targetEl = document.getElementById('gil');
+    //li태그의 요소들을 유사배열로 반환(이터러블)
+    document.getElementsByName('li');
+    targetEl.getElementsByName('li');
+    //모든 태그 요소들을 유사배열로 반환
+    document.getElementsByName('*');
+    targetEl.getElementsByName('*');
+    
+    //요소가 존재하지 않는경우 빈 HTMLCollection 객체를 반환한다.
+    targetEl.getElementsByName('a');
 </script>
 ```
