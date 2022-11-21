@@ -116,7 +116,7 @@ querySelector 메서드는 인수로 전달한 CSS 선택자를 만족 시키는
 * CSS 선택자가 문법에 맞지 않는 경우 DOMException 에러가 발생한다.
 * HTML문서의 모든 요소 노드를 취득하려면 querySelectorAll 메서드에 *을 전달한다.
 
-> id값이 있는 요소 노드를 취득할때는 get 
+> id값이 있는 요소 노드를 취득할때는 getElementById를 사용하고 그외에는 querySelector, querySelectorAll를 사용하는 것을 권장한다.
 
 ```html
 <div id="gil">
