@@ -139,3 +139,50 @@ querySelector 메서드는 인수로 전달한 CSS 선택자를 만족 시키는
     targetEl.getElementsByName('a');
 </script>
 ```
+
+<br>
+
+## **39.2.5 특정 요소 노드를 취득할 수 있는지 확인**
+matches 메서드는 인수로 전달한 CSS 선택자를 특정 요소 노드로 취득할 수 있는지 확인한다.
+```js
+$target.matches('#fruit > .apple')//true
+```
+
+<br>
+
+## **39.2.6 HTMLCollection과 NodeList**
+HTMLCollection과 NodeList는 노드객체의 상태 변화를 실시간으로 반영하는 살아있는 객체라는 것이 중요한 특징이다.
+
+<br>
+
+### **`HTMLCollection`**
+HTMLCollection 객체는 실시간으로 노드객체의 상태를 반영하여 요소를 제거하기때문에 for문으로 순회할때 주의해야 한다.
+```html
+<div class="red">A</div>
+<div class="red">B</div>
+<div class="red">C</div>
+<script >
+    //HTMLCollection은 실시간으로 반영되기 때문에
+    //for문을 돌리면 2번째 배열요소를 제외한 1,3번째 배열요소만 반영된다. 
+    const target = document.getElementsByClassName('red');
+    for(let i = 0; i < target.length; i++){
+        target[i].className = 'blue';
+    }
+
+    //for문을 역방향으로 순회하거나 while문을 쓰면 하면 해결된다.
+    for(let i = target.length -1; i>=0; i--){
+        target[i].className = 'blue';
+    }
+    
+    //HTMLCollection 객체를 배열로 변환해도 해결할 수 있다.
+    //고차함수(forEach, map, filter, reduce등)도 사용할 수 있다.
+    [...target].forEach(el => el.className = 'blue');
+</script>
+```
+
+<br>
+
+### **`NodeList`**
+HTMLCollection 객체의 부작용(실시간 반영되기 때문에 순회시 모든 노드요소가 적용 되지않을 수 있는것)을 해결하기위해 querySelectorAll 메서드를 사용하는 방법도 있다.
+
+querySelectorAll 메서드는 DOM 컬렉션 객체인 NodeList를 반환(실시간으로 노드객체의 상태 변경을 반영하지 않음)한다.
