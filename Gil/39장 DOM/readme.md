@@ -318,4 +318,121 @@ Node.prototype.parentNode 프로퍼티를 사용하여 부모노드(리프노드
 
 <br>
 
-## **39.4 노드 정보 취득**
+# **39.4 노드 정보 취득**
+
+| 프로퍼티                    | 설명                                                                                                                                                                     |
+|:------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Node.prototype.nodeType | 노드 타입을나타내는 상수를 반환한다.<br/>* Node.ELEMENT_NODE: 요소 노드 타입을 나타내는 상수 1을 반환<br/>* Node.TEXT_NODE: 텍스트 노드 타입을 나타내는 상수 3을 반환<br/>* Node.DOCUMENT_NODE: 문서 노드 타입을 나타내는 상수 9를 반환 |
+| Node.prototype.nodeName | 노드의 이름을 문자열로 반환<br/>* 요소노드: 대문자 문자열로 태그이름을 반환<br/>* 텍스트 노드: 문자열 "#text"를 반환<br/>* 문서 노드: 문자열 "#document"를 반환                                                           |
+
+```js
+console.log(document.nodeType); //9
+console.log(document.nodeName); // #document
+console.log(idTag.nodeName); // 1
+console.log(idTag.nodeType); // DIV
+console.log(idTag.firstChild.nodeType); // 3
+console.log(idTag.firstChild.nodeName); // #text
+```
+
+<br>
+
+# **39.5 요소 노드의 텍스트 조작**
+
+<br>
+
+## **39.5.1 nodeValue**
+nodeValue 프로퍼티는 setter, getter 모두 존재하는 접근자 프로퍼티다.(지금까지 살펴본 프로퍼티는 모두 읽기 전용 접근자 프로퍼티)
+
+노드객체의 nodeValue 프로퍼티를 참조하면 노드객체의 값을 반환한다.(텍스트 노드의 텍스트 반환) 문서노드나 요소노드의 nodeValue 프로퍼티를 참조하면 null을 반환한다.
+
+<br>
+
+### `요소노드의 텍스트 변경 방법`<br>
+1. 텍스트를 변경할 요소 노드를 취득한 다음, 취득한 요소 노드의 텍스트 노드를 탐색한다.(firstChild 프로퍼티를 사용하여 탐색)
+2. 탐색한 텍스트 노드의 nodeValue 프로퍼티를 사용하여 텍스트 노드의 값을 변경한다.
+
+<br>
+
+## **39.5.2 textContent**
+setter, getter 모두가 존재하는 접근자 프로퍼티다. 요소 노드의 텍스트와 모든 자손 노드의 텍스트를 모두 취득하거나 변경한다.(HTML 마크업은 무시된다.)
+
+콘텐츠 영역에 자식 노드가 없고 텍스트만 존재한다면 nodeValue 프로퍼티보단 textContent 프로퍼티를 사용하는것이 더 간단하다. **(nodeValue 프로퍼티를 사용하면 텍스트 노드만 취득하지 않으면 null을 반환하기 때문이다.)**
+
+```html
+<div id="target">hi!</div>
+
+<script >
+    document.getElementById('target').textContent // hi
+    
+    //하지만 HTML 마크업이 파싱 되지않아 태그명을 텍스트 노드(텍스트)로 인식한다.
+    document.getElementById('target').textContent = 'hi! <span>there</span>';
+    //hi! <span>there</span> (span 태그는 태그가 아니라 문자열이다.)
+    document.getElementById('target').textContent
+</script>
+```
+
+<img src="./img2.PNG">
+<br>HTML 마크업은 문자열이다.
+
+<br>
+
+> **innerText 프로퍼티를 사용을 권장하지 않는 이유.**
+> * CSS에 순종적이다. 예를 들어 visibility:hidden으로 지정된 요소노드의 텍스트를 반환하지 않는다.
+> * CSS를 고려해야 하므로 textContent 프로퍼티보다 느리다.
+
+<br>
+
+# **39.6 DOM 조작**
+DOM 조작은 성능에 영향(리플로우, 리페인트)을 주기 때문에 성능 최적화를 위해 주의해서 다루어야 한다.
+
+<br>
+
+## **39.6.1 innerHTML**
+HTML마크업이 포함된 문자열을 그대로 반환한다. 요소노드의 모든자식노드가 제거되고 할당된 값을 HTML마크업이 파싱되어 자식노드로 DOM에 반영된다.
+
+```js
+//노드추가
+target.innerHTML += '<li class="banana">A</li>';
+//노드교체
+target.innerHTML = '<li class="banana">A</li>';
+//노드삭제
+target.innerHTML = '';
+
+//크로스 사이트 스크립팅 공격에 취약하므로 위험할 수 있다.
+//HTML5는 innerHTML 프로퍼티로 삽입된 script요소 내의 js를 실행하지 않는다.
+target.innerHTML = '<script>alert(document.cookie)</script>';
+```
+
+>sanitize를 사용하면 잠재적 위험을 내포한 HTML 마크업을 제거한다.
+> `DOMPurify.sanitize('<a onerror="alert(document.cookie)"></a>') // => <a></a>`
+
+**단점1.** innerHTML은 요소노드를 추가를 하더라도 기존에 있던 요소 즉 모든 요소를 다 삭제후 다시 생성하여 자식요소로 추가한다.
+
+```js
+//노드추가
+//자식요소를 모두 삭제하고 다시 생성한다.
+target.innerHTML += '<li class="banana">A</li>';
+```
+
+<br>
+
+**단점2.** 새로운 요소를 삽입할 떄 위치를 지정할 수 없다.
+
+<br>
+
+## **39.6.2 insertAdjacentHTML 메서드**
+insertAdjacentHTML(position, DOMString)메서드는 **기존 요소를 제거하지 않고, 위치를 지정해 새로운 요소를 삽입한다.**
+
+첫번째 인수로 위치지정은 beforebegin, afterbegin, beforeend, afterend 4가지를 할당 할수 있다.
+
+두번째 인수로 HTML 마크업 문자열을 할당한다.
+
+<img src="./img3.PNG" width="100%">
+
+```js
+$target.insertAdjacentHTML('beforeend','<p>beforeend</p>');
+```
+
+<br>
+
+## **39.6.3 노드 생성과 추가**
