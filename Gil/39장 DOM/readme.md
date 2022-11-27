@@ -762,6 +762,40 @@ $target.classList.contains('gil');//true
 
 5. replace
 ```js
-//인수로 전달한 문자열과 일치하는 클래스가 class에 포함돼 있는지 확인한다.
-$target.classList.contains('gil');//true
+//첫번째 인수로 전달한 문자열을 두번째 인수로 전달한 문자열로 변경한다.
+$target.classList.replace('gil','young');
 ```
+
+6. toggle
+```js
+//인수로 전달한 문자열과 일치하는 클래스가 존재하면 제거하고, 존재하지 않으면 추가한다.
+$target.classList.toggle('gil');
+```
+
+7. toggle
+```js
+//인수로 전달한 문자열과 일치하는 클래스가 존재하면 제거하고, 존재하지 않으면 추가한다.
+$target.classList.toggle('gil');
+//class에 gil 강제로 추가
+$target.classList.toggle('gil',true);
+//class에 gil 강제로 제거
+$target.classList.toggle('gil',false);
+```
+
+DOMTokenList객체는 forEach, entries, keys, values, supports 메서드를 제공한다.
+
+<br>
+
+## **39.8.3 요소에 적용되어 있는 CSS 스타일 참조**
+style프로퍼티는 인라인 스타일만 반환한다. 따라서 클래스를 적용한 스타일이나 상속을 통해 암묵적으로 적용된 스타일은 style프로퍼티로 참조할 수 없다. HTML요소에 적용되어 있는 모든 CSS 스타일을 참조해야하는 경우 getComputedStyle 메서드를 사용한다.
+
+window.getComputedStyle(element[, pseudo]) 메서드는
+
+첫번째 인수(element)로 전달한 요소노드에 적용되어 있는 평가된 스타일(모든스타일)을 CSSStyleDeclaration 객체에 담아 반환한다.
+
+두번째 인수로 :after, :before와 같은 의사 요소를 지정하는 문자열을 전달할 수 있다. 즉, 의사요소에 적용된 스타일값을 반환한다. 일반 요소일 경우 인수는 생략된다.
+
+<br>
+
+## **39.9 DOM 표준**
+DOM 표준은 4개의 주류 브라우저 벤더사가 주도하는 WHATWG이 단일 표준을 내놓기로 했다.
