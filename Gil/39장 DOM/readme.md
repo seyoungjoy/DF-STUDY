@@ -436,3 +436,332 @@ $target.insertAdjacentHTML('beforeend','<p>beforeend</p>');
 <br>
 
 ## **39.6.3 노드 생성과 추가**
+DOM은 노드를 직접 생성/삽입/삭제/치환 하는 메서드를 제공한다.
+
+```js
+const getTarget = document.getElementById('target');
+
+// 1. 요소 노드 생성
+const $li = document.createElement('li');
+
+// 2. 텍스트 노드 생성
+const textNode = document.createTextNode('banana');
+
+// 3. 텍스트 노드를 $li 요소 노드의 자식 노드로 추가
+$li.appendChild(textNode);
+
+// 4. $li 요소 노드를 target 요소 노드의 마지막 자식 노드로 추가
+getTarget.appendChild($li);
+```
+
+<br>
+
+### **`1. 요소 노드 생성`**
+createElement 메서드는 요소 노드를 생성하여 반환한다. 태그이름을 나타내는 문자열을 인수로 전달한다.
+
+createElement 메서드는 요소 노드를 생성할뿐 DOM에 추가하지 않는다. 따라서 **이후에 생성된 요소노드를 DOM에 추가하는 처리가 별도로 필요하다.** 
+
+<br>
+
+### **`2. 텍스트 노드 생성`**
+createTextNode 메서드는 텍스트 노드를 생성하여 반환한다. 텍스트 노드의 값으로 사용할 문자열을 인수로 전달한다.
+
+홀로 존재하는 상태이기 때문에, 요소 노드에 추가하는 처리가 별도로 필요하다.
+
+<br>
+
+### **`3. 텍스트 노드를 요소 노드의 자식 노드로 추가`**
+appendChild 메서드로 호출한 노드의 마지막 자식으로 인수로 전달한 노드를 추가한다. 
+
+인수로 createTextNode 메서드로 생성한 텍스트 노드를 전달하면 appendChild 메서드를 호출한 노드의 마지막 자식 노드로 텍스트 노드가 추가된다.
+
+📌 요소 노드에 자식 노드가 하나도 없는경우 textContent 프로퍼티를 사용하는 편이 더 간편하다.
+
+```js
+$li.textContent = 'banana';
+```
+
+<br>
+
+### **`4. 요소 노드를 DOM에 추가`**
+텍스트 노드와 부자 관계로 연결한 요소 노드를 target 요소 노드의 마지막 자식 요소로 추가한다.
+
+```js
+getTarget.appendChild($li);
+```
+
+>이 과정에서 생성한 요소 노드가 DOM에 추가된다.(리플로우, 리페인트 실행)
+ 
+<br>
+
+## **39.6.4 복수의 노드 생성과 추가**
+아래의 예시는 리플로우, 리페인트가 3번 실행된다. **DOM을 변경하는 것은 높은 비용이 드는 처리이므로 가급적 횟수를 줄이는 편이 성능에 유리하다.**
+```js
+//DOM 세 번 변경
+['A','B','C'].forEach(el => {
+    //1. 요소 노드 생성
+    const $li = document.createElement('li');
+    //2. 텍스트 노드 생성
+    const textNode = document.createTextNode(el);
+    //3. 텍스트 노드를 $li 요소 노드의 자식 노드로 추가
+    $li.appendChild(textNode);
+    //4. $li 요소 노드를 target 마지막 자식 노드로 추가
+    target.appendChild($li);
+});
+
+//DOM 한 번 변경
+//1. 컨테이너 요소 노드 생성
+// target 요소에 자식으로 추가하면 DOM은 한 번만 변경된다.
+// DOM 요소에 div를 추가하는 처리를 하기전에 이미 li는 추가된 상태이므로
+const $container = document.createElement('div');
+
+['A','B','C'].forEach(el => {
+    //2. 요소 노드 생성
+    const $li = document.createElement('li');
+    //3. 텍스트 노드 생성
+    const textNode = document.createTextNode(el);
+    //4. 텍스트 노드를 $li 요소 노드의 자식 노드로 추가
+    $li.appendChild(textNode);
+    //5. $li 요소 노드를 target 마지막 자식 노드로 추가
+    $container.appendChild($li);
+});
+
+//6. DOM요소로 추가한다.(이때 한번 DOM 요소를 변경한다.)
+target.appendChild($container);
+```
+
+>위의 예제는 불필요한 div를 생성한다는 부작용이 있다. 이는 DocumentFragment 노드를 통해 해결할 수 있다.
+
+<br>
+
+### **`DocumentFragment`**
+자식노드들의 부모 노드로서 별도의 서브 DOM을 구성하여 기존 DOM에 추가하기 위한 용도로 사용한다. DocumentFragment 노드를 DOM에 추가하면 자신은 제거되고 자신의 자식 노드만 DOM에 추가된다.
+
+```js
+//$container 대신 createDocumentFragment 메서드를 사용하면된다.
+//서브 DOM을 생성하여 자식 노드들을 추가하고 기존 DOM으로 추가한다.
+const $fragment = document.createDocumentFragment();
+```
+
+<br>
+
+## **39.6.5 노드 삽입**
+
+<br>
+
+### **`마지막 노드로 추가`**
+appendChild 메서드는 인수로 전달받은 노드를 자신을 호출한 노드의 마지막 자식 노드로 DOM에 추가한다.
+
+<br>
+
+### **`지정한 위체에 노드 삽입`**
+insertBefore(newNode, childNode) 메서드는 첫번째 인수로 전달받은 노드를 두번쨰 인수로 전달받은 노드 앞에 삽입한다.
+
+```js
+//마지막 자식 요소 앞에 추가
+$target.insertBefore($li, $target.lastElementChild);
+
+//반드시 inserBefore 메서드를 호출한 노드의 자식 노드이어야 하며 그렇지 않으면 DOMException에러가 발생한다.
+$target.insertBefore($li, document.querySelector('div')); //DOMException
+
+//두번쨰 인수가 null이면 appendChild 처럼 마지막 자식 노드로 추가된다.
+$target.insertBefore($li, null);
+```
+
+<br>
+
+## **39.6.6 노드 이동**
+이미 존재하는 노드를 appendChild 또는 insertBefore 메서드를 사용하여 DOM에 다시 추가하면 현재 위치에서 노드를 제거하고 새로운 위치에 노드를 추가하여 노드가 이동된다.
+
+<br>
+
+## **39.6.7 노드 복사**
+Node.prototype.cloneNode([deep:true | false]) 메서드는 노드의 사본을 생성하여 반환한다.
+
+true면 모든 자손 노드가 포함된 사본, false는 노드 자신만의 사본을 생성한다.(텍스트 노드도 미포함)
+
+<br>
+
+## **39.6.8 노드 교체**
+Node.prototype.replaceChild(newChild, oldChild) 메서드는 자신을 호출한 노드의 자식 노드를 다른 노드로 교체한다. (oldChild 노드는 호출한 노드의 자식 노드이어야 한다.)
+
+<br>
+
+## **39.6.9 노드 삭제**
+Node.prototype.removeChild(child) 메서드는 인수로 전달한 노드를 DOM에서 삭제한다. (호출한 노드이 자식 노드이어야 한다.)
+
+<br>
+
+# **39.7 어트리뷰트**
+
+<br>
+
+## **39.7.1 어트리뷰트 노드와 attributes 프로퍼티**
+글로벌 어트리뷰트(id, class, style, title, lang, tabindex, draggable, hidden 등)와 이벤트 핸들러 어트리뷰트(onclick, onchange, onfocus, onblur, oninput, onkeypress 등)는 모든 HTML 요소에서 공통적으로 사용할 수 있지만 특정 HTML 요소에만 한정적으로 사용 가능한 어트리뷰트(type, value, checked 등)도 있다.
+
+HTML 어트리뷰트는 어트리뷰트 노드로 변환되어 요소 노드와 연결 된다. 어트리뷰트 하나당 하나의 어트리뷰트 노드가 생성된다.
+
+모든 어트리뷰트 노드의 참조는 유사 배열객체이자 이터러블인 **NameNodeMap 객체에 담겨서 요소노드의 attributes 프로퍼티에 저장된다.**
+
+<br>
+
+## **39.7.2 HTML 어트리뷰트 조작**
+어트리뷰트 값을 취득할 수 있지만 변경할 수 없다. attributes.id.value와 같이 값을 취득할 수 있다.
+
+Element.prototype.getAttribute/setAttribute 메서드를 사용하면 요소노드에서 메서드를 통해 직접 값을 취득하거나 변경할 수 있다.
+
+```js
+//value 어트리뷰트 값 취득
+$input.getAttribute('value');
+//value 어트리뷰트 값 변경
+$input.setAttribute('value','foo');
+
+//value 어트리뷰트 존재 확인
+$input.hasAttribute('value'); //true
+//value 어트리뷰트 삭제
+$input.removeAttribute('value');
+```
+
+<br>
+
+## **39.7.3 HTML 어트리뷰트 vs. DOM 프로퍼티**
+요소노드 객체에는 DOM프로퍼티가 존재하며 초기값으로 가지고 있다.
+DOM 프로퍼티는 setter,getter 모두가 존재하는 접근자 프로퍼티이어서 참조와 변경이 가능하다.
+
+**요소노드의 attributes 프로퍼티, DOM 프로퍼티 이렇게 두곳에서 관리 되는것 같지만 그렇지 않다.**
+
+HTML 어트리뷰트의 역할은 HTML 요소의 초기 상태를 지정하는 것이다. HTML 어트리뷰트 값은 HTML요소의 초기상태를 의미하며 이는 변하지 않는다.
+
+>따라서 요소 노드의 초기상태는 어트리뷰트 노드가 관리(새로고침했을때 초기값)하며, 요소노드의 최신상태는 DOM 프로퍼티가 관리(변화는 값 관리)한다.
+ 
+<br>
+
+### **`어트리뷰트 노드`**
+HTML요소의 초기상태는 어트리뷰트 노드에서 관리한다. 사용자 입력에 의해 상태가 변경되어도 변하지 않고 값을 취득하거나 변경하려면 getAttribute/setAttribute 메서드를 사용한다.
+
+getAttribute 메서드는 언제나 값이 같으며, setAtrribute 메서드를 사용하면 HTML 요소에 지정한 어트리뷰트값(초기상태 값)을 변경한다.
+
+<br>
+
+### **`DOM 프로퍼티`**
+사용자가 입력에 의해 상태가 변경되는 값을 관리한다.
+
+사용자의 입력과 관계가 없는 id 어트리뷰트와 id 프로퍼티는 항상 동일한 값을 유지한다. 즉 id 어트리뷰트 값이 변하면 id 프로퍼티값도 변하고 반대도 마찬가지다. (사용자 입력에 의한 상태 변화와 관계있는 DOM 프로퍼티만 최신 상태 값을 관리한다.)
+
+<br>
+
+### **`HTML 어트리뷰트와 DOM 프로퍼티의 대응 관계`**
+* id어트리뷰트와 id프로퍼티는 1:1대응하며 동일한 값으로 연동한다.
+* input 요소의 value 어트리뷰트는 value 프로퍼티와 1:1대응하지만, 각각 초기상태, 최신상태를 갖는다.
+* class 어트리뷰트는 className, classList 프로퍼티와 대응한다.
+* for 어트리뷰트는 htmlFor 프로퍼티와 1:1대응한다.
+* td 요소의 colspan 어트리뷰트는 대응하는 프로퍼티가 존재하지 않는다.
+* textContent 프로퍼티는 대응하는 어트리뷰트가 존재하지 않는다.
+* 어트리뷰트 이름은 대소문자를 구별하지 않지만 대응하는 프로퍼티 키는 카멜케이스를 따른다.
+
+<br>
+
+### **`DOM 프로퍼티 값의 타입`**
+getAttribute 메서드로 취득한 어트리뷰트값은 무조건 문자열이지만,  DOM 프로퍼티의 값의 타입은 문자열이 아닌 경우도 있다. (예를들면 checkbox 프로퍼티는 값은 불리언 타입이다.)
+
+<br>
+
+## **39.7.4 data 어트리뷰트와 dataset 프로퍼티**
+data 어트리뷰트와 dataset 프로퍼티를 사용하면 HTML 요소에 정의한 사용자 정의 어트리뷰트와 자바스크립트 간에 데이터를 교환할 수 있다.
+
+```html
+//data- 를 접두사로 두고 임의의 이름을 붙여 사용한다.
+<li data-gil="hi" data-young="hihihi"></li>
+```
+
+data 어트리뷰트의 값은 HTMLElement.dataset 프로퍼티로 취득할 수 있다.
+
+data 어트리뷰트의 정보를 제공하는 DOMStringMap 객체를 반환하며, data- 접두사 다음에 이름을 카멜케이스로 변환한 프로퍼티를 가지고 있다. 이 프로퍼티로 data 어트리뷰트의 값을 취득하거나 변경할 수 있다.
+
+```js
+const target = document.querySelector('li');
+//값 취득
+console.log(target.dataset.gil); //hi
+//값 변경
+target.dataset.gil = 'hellow';
+//HTML 요소에 data 값 추가
+target.dataset.kim = '123';
+```
+
+<br>
+
+# **39.8 스타일**
+
+<br>
+
+## **39.8.1 인라인 스타일 조작**
+HTMLElement.prototype.style 프로퍼티는 setter,getter 모두가 존재하여 요소노드의 인라인 스타일을 취득하거나 추가 또는 변경한다.
+
+CSSStyleDeclaration 타입의 객체를 반환한다. CSS 프로퍼티에 대응하는 프로퍼티를 가지고 있으며 이 프로퍼티에 값을 할당하면 해당 CSS프로퍼티가 인라인 스타일로 HTML 요소가 추가되거나 변경된다.
+
+```js
+//CSSStyleDeclaration 사용
+target.style.backgroundColor = 'yellow';
+//CSS프로퍼티 사용
+target.style['background-color'] = 'yellow';
+//단위가 필요한 CSS 프로퍼티의 값은 단위가 없으면 적용되지 않는다.
+target.style.width = '100'; //적용되지않음.
+```
+
+<br>
+
+## **39.8.2 클래스 조작**
+
+<br>
+
+### **`className`**
+className 프로퍼티는 setter와 getter 모두 존재하는 접근자 프로퍼티다.(값 취득, 변경 가능)
+
+className 프로퍼티를 참조하면 class 어트리뷰트 값을 문자열로 반환하고, 문자열을 할당하면 class 어트리뷰트 값을 할당한 문자열로 변경한다.
+
+```js
+//클래스 이름이 여러개일 경우 공백이 추가되어 불편하다.
+console.log($target.className); //box red
+```
+
+<br>
+
+### **`classList`**
+Element.prototype.classList 프로퍼티는 class 어트리뷰트의 정보를 담은 DOMTokenList 객체를 반환한다.
+
+```js
+//클래스 이름이 여러개일 경우 공백이 추가되어 불편하다.
+console.log($target.classList); //{length:2, value:"box red", 0:"box",1:"red"}
+```
+
+DOMTokenList 객체는 다음과 같이 유용한 메서드들을 제공한다.
+
+1. add
+```js
+//인수로 전달한 1개 이상의 문자열을 class 어트리뷰트 값으로 추가한다.
+$target.classList.add('gil');
+```
+
+2. remove
+```js
+//인수로 전달한 1개 이상의 문자열과 일치한 클래스를 class 어트리뷰트 값에서 삭제한다.
+$target.classList.remove('gil');
+```
+
+3. item
+```js
+//인수로 전달한 index에 해당하는 클래스 이름를 class 어트리뷰트에서 반환한다.
+$target.classList.item(0);//gil
+```
+
+4. contains
+```js
+//인수로 전달한 문자열과 일치하는 클래스가 class에 포함돼 있는지 확인한다.
+$target.classList.contains('gil');//true
+```
+
+5. replace
+```js
+//인수로 전달한 문자열과 일치하는 클래스가 class에 포함돼 있는지 확인한다.
+$target.classList.contains('gil');//true
+```
